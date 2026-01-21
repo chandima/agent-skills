@@ -369,9 +369,11 @@ Now start the dev environment:
 You: !npm run dev
 ```
 
+> **Note**: `npm run dev` may need to be run in a separate terminal outside of OpenCode for the interactive dev server to work properly.
+
 > **Note**: If you use AWS SSO or named profiles, set your profile before running:
 > ```
-> !AWS_PROFILE=your-profile npm run dev
+> AWS_PROFILE=your-profile npm run dev
 > ```
 
 This runs SST (deploying infrastructure) and Astro dev server concurrently. You'll see interleaved output from both processes:
