@@ -131,7 +131,6 @@ ls -la
   │   ├── pr-description-apm.prompt.md
   │   ├── refactor-apm.prompt.md
   │   └── test-plan-apm.prompt.md
-  ├── skills/           # On-demand expertise
   └── AGENTS.md
 .gitignore
 AGENTS.md               # Compiled instructions for AI
@@ -145,7 +144,6 @@ SKILL.md
 | `AGENTS.md` | Compiled instructions OpenCode reads |
 | `.github/agents/` | Agent personas with tool permissions |
 | `.github/prompts/` | Executable workflow commands |
-| `.github/skills/` | On-demand expertise modules |
 | `apm.yml` | Package dependencies |
 
 ---
@@ -328,51 +326,9 @@ todo-app/
 
 ---
 
-## 6. Load Skills On-Demand
+## 6. Review Code with /code-review
 
-OpenCode can load skills dynamically when needed. Skills provide deep expertise without bloating the base context.
-
-```
-You: I want to review my API routes for security issues. 
-     Load the security review skill.
-
-Agent: Loading skill: review/security
-
-Applying security detection methodology...
-
-Checking for hardcoded secrets:
-  grep -rE "(api[_-]?key|password|secret)" src/
-  ✓ No hardcoded secrets found
-
-Checking for input validation:
-  ⚠ src/pages/api/todos/index.ts:12 - Missing input validation
-  
-Recommendation: Add zod schema validation for the request body.
-```
-
-### Available Skills
-
-| Domain | Skills |
-|--------|--------|
-| **review/** | `code`, `security` |
-| **testing/** | `strategy`, `e2e` |
-| **devops/** | `cicd`, `containers`, `iac`, `security` |
-| **architecture/** | `patterns` |
-| **stack/** | `sst`, `astro`, `alpine`, `basecoat` |
-
-Load any skill by asking the agent:
-
-```
-You: Load the devops/containers skill and review my Dockerfile
-You: I need the testing/e2e skill to write Playwright tests
-You: Use the architecture/patterns skill to evaluate this design
-```
-
----
-
-## 7. Review Code with /code-review
-
-Prompts are executable workflows that orchestrate skills. Run them with `/`:
+Prompts are executable workflows. Run them with `/`:
 
 ```
 You: /code-review
@@ -381,9 +337,7 @@ You: /code-review
 ```
 Agent: Running code review workflow...
 
-Loading skills: review/code, review/security
-
-Analyzing: packages/functions/src/todos.ts, packages/web/src/pages/index.astro
+Analyzing: src/pages/api/todos/index.ts, src/pages/index.astro
 
 ## CODE REVIEW REPORT
 
@@ -393,8 +347,8 @@ Analyzing: packages/functions/src/todos.ts, packages/web/src/pages/index.astro
 ### High Priority
 | Location | Issue | Recommendation |
 |----------|-------|----------------|
-| todos.ts:12 | Missing input validation | Add zod schema for request body |
-| todos.ts:8 | No error handling | Wrap DynamoDB calls in try/catch |
+| index.ts:12 | Missing input validation | Add zod schema for request body |
+| index.ts:8 | No error handling | Wrap DynamoDB calls in try/catch |
 
 ### Suggestions
 - Add loading state to UI while fetching todos
@@ -419,7 +373,7 @@ Analyzing: packages/functions/src/todos.ts, packages/web/src/pages/index.astro
 
 ---
 
-## 8. Run the App
+## 7. Run the App
 
 Install dependencies and start the SST dev environment:
 
@@ -481,9 +435,8 @@ apm compile
 | Step | Command | Result |
 |------|---------|--------|
 | Create | `mkdir todo-app && git init` | Empty repo |
-| Install | `apm install chandima/agent-skills` | Agents, prompts, skills |
+| Install | `apm install chandima/agent-skills` | Agents, prompts |
 | Compile | `apm compile` | AGENTS.md generated |
 | Build | `opencode` → `@fullstack-developer` | SST + Astro app |
-| Skills | Ask agent to load skills | On-demand expertise |
 | Review | `/code-review` | Code analyzed |
 | Run | `npx sst dev` | App running |
