@@ -339,11 +339,14 @@ Would you like me to implement any of these fixes?
 
 ## 7. Run the App
 
-Install dependencies and start the SST dev environment:
+Install dependencies and start the SST dev environment. You can run terminal commands directly in OpenCode by prefixing with `!`:
 
-```bash
-npm install
-npm run dev
+```
+You: !npm install
+```
+
+```
+You: !npm run dev
 ```
 
 This starts SST's multiplexer which deploys your infrastructure and runs the Astro dev server locally. You'll see a tabbed interface with:
@@ -415,6 +418,6 @@ apm compile
 | Create | `mkdir todo-app && git init` | Empty repo |
 | Install | `apm install chandima/agent-skills` | Skills installed |
 | Compile | `apm compile` | AGENTS.md generated |
-| Build | `opencode` → `@fullstack-developer` | SST + Astro app |
+| Build | `@fullstack-developer` | SST + Astro app |
 | Review | `@review` | Code analyzed |
-| Run | `npm run dev` | App running locally |
+| Run | `!npm run dev` | App running locally |
