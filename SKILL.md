@@ -1,67 +1,97 @@
 ---
 name: agent-skills
-description: Development standards, workflows, and AI agent configurations for TypeScript, Astro, and modern web development
+description: Development standards, workflows, and AI agent configurations for TypeScript, Astro, and modern web development. Use when setting up coding standards, running code reviews, creating PRs, debugging issues, or planning tests.
+metadata:
+  author: chandima
+  version: "1.0.0"
 ---
 
 # Agent Skills Package
 
 A comprehensive collection of coding standards, reusable prompts, and specialized AI agents for consistent, high-quality software development.
 
+## How It Works
+
+1. Install the package with `apm install chandima/agent-skills`
+2. Compile for your AI tool with `apm compile --target <tool>`
+3. Instructions are applied automatically based on file patterns
+4. Prompts are available as `/commands`
+5. Agents are available as `@mentions`
+
 ## What This Package Provides
 
 ### Instructions (Guardrails)
 Coding standards that apply automatically based on file patterns:
-- **TypeScript** - Strict type safety, no `any`, explicit returns
-- **Astro** - Component patterns, Tailwind usage, accessibility
-- **JSON Schema** - Draft-04 compatibility, `$ref` patterns
-- **Git** - Commit message format, PR guidelines, branch naming
-- **Security** - No secrets in code, input validation, dependency checks
+
+| Instruction | File Pattern | Key Rules |
+|-------------|--------------|-----------|
+| TypeScript | `**/*.{ts,tsx}` | Strict types, no `any`, explicit returns |
+| Astro | `**/*.astro` | Component patterns, Tailwind, accessibility |
+| JSON Schema | `**/*.schema.json` | Draft-04 compatibility, `$ref` patterns |
+| Git | All files | Conventional commits, PR guidelines |
+| Security | All code | No secrets, input validation, dependency checks |
 
 ### Prompts (Workflows)
 Reusable commands for common development tasks:
-- `/code-review` - Systematic review for bugs, security, and performance
-- `/pr-description` - Generate PR descriptions from changes
-- `/debug-issue` - Structured debugging workflow
-- `/refactor` - Safe refactoring with test preservation
-- `/test-plan` - Generate comprehensive test cases
+
+| Prompt | Command | Use When |
+|--------|---------|----------|
+| Code Review | `/code-review` | Reviewing code for bugs, security, performance |
+| PR Description | `/pr-description` | Generating PR descriptions from changes |
+| Debug Issue | `/debug-issue` | Structured debugging workflow |
+| Refactor | `/refactor` | Safe refactoring with test preservation |
+| Test Plan | `/test-plan` | Generating comprehensive test cases |
 
 ### Agents (Personas)
 Specialized AI assistants for focused tasks:
-- **Code Reviewer** - Quality-focused code analysis
-- **Architect** - System design and patterns advisor
-- **Test Engineer** - Testing strategy specialist
 
-## When to Use This Package
+| Agent | Mention | Specialty |
+|-------|---------|-----------|
+| Code Reviewer | `@code-reviewer` | Quality-focused code analysis (read-only) |
+| Architect | `@architect` | System design and patterns advisor |
+| Test Engineer | `@test-engineer` | Testing strategy, Playwright, coverage |
 
-Install this package when you want to:
-- Apply consistent coding standards across projects
-- Have reliable, repeatable workflows for common tasks
-- Use specialized AI agents for focused work
-- Share development best practices with your team
+## Scripts
 
-## Quick Start
+Prompts can be invoked directly as commands:
 
 ```bash
-# Install in any project
-apm install chandima/agent-skills
-apm compile
-
-# Use prompts
+# Run a code review on the current changes
 /code-review
+
+# Generate a PR description
 /pr-description
 
-# Use agents via @ mention
-@code-reviewer review the authentication module
-@architect design a caching layer
+# Debug an issue with structured workflow
+/debug-issue "Error: Connection timeout"
+
+# Plan refactoring with safety checks
+/refactor src/api/
+
+# Generate test plan for a feature
+/test-plan user-authentication
 ```
 
-## Package Structure
+## References
 
-```
-.apm/
-├── instructions/     # Coding standards (auto-applied by file pattern)
-├── prompts/          # Reusable workflow commands
-└── agents/           # Specialized AI personas
+This package integrates with and references:
+
+| Resource | Type | Purpose |
+|----------|------|---------|
+| [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | APM Skill | Browser automation for E2E testing |
+| [vercel-labs/agent-skills#web-design-guidelines](https://github.com/vercel-labs/agent-skills) | APM Skill | 100+ UI/UX/accessibility audit rules |
+| [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md) | External | Source for web-design-guidelines rules |
+| [Agent Skills Spec](https://agentskills.io/) | Specification | SKILL.md format documentation |
+
+## Dependencies
+
+This package declares the following APM dependencies:
+
+```yaml
+dependencies:
+  apm:
+    - vercel-labs/agent-browser          # Browser automation
+    - vercel-labs/agent-skills#web-design-guidelines  # UI/UX audit
 ```
 
 ## MCP Server Recommendations
@@ -108,3 +138,51 @@ This package follows a **Skills-first** approach:
 - **MCP Servers** are documented but not declared, letting consumers choose
 
 This keeps the package lightweight while providing guidance for enhanced capabilities.
+
+## Package Structure
+
+```
+.apm/
+├── instructions/     # Coding standards (auto-applied by file pattern)
+│   ├── typescript.instructions.md
+│   ├── astro.instructions.md
+│   ├── json-schema.instructions.md
+│   ├── git.instructions.md
+│   └── security.instructions.md
+├── prompts/          # Reusable workflow commands
+│   ├── code-review.prompt.md
+│   ├── pr-description.prompt.md
+│   ├── debug-issue.prompt.md
+│   ├── refactor.prompt.md
+│   └── test-plan.prompt.md
+└── agents/           # Specialized AI personas
+    ├── code-reviewer.agent.md
+    ├── architect.agent.md
+    └── test-engineer.agent.md
+```
+
+## Quick Start
+
+```bash
+# Install in any project
+apm install chandima/agent-skills
+apm compile
+
+# Use prompts
+/code-review
+/pr-description
+
+# Use agents via @ mention
+@code-reviewer review the authentication module
+@architect design a caching layer
+@test-engineer write E2E tests for checkout flow
+```
+
+## When to Use This Package
+
+Install this package when you want to:
+- Apply consistent coding standards across projects
+- Have reliable, repeatable workflows for common tasks
+- Use specialized AI agents for focused work
+- Share development best practices with your team
+- Audit UI code for accessibility and UX compliance

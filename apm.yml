@@ -5,3 +5,4 @@ description: Development standards, workflows, and AI agent configurations for c
 dependencies:
   apm:
     - vercel-labs/agent-browser # Browser automation skill
+    - vercel-labs/agent-skills#web-design-guidelines # 100+ UI/UX/a11y audit rules
