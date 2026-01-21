@@ -379,8 +379,12 @@ Install dependencies and start the SST dev environment:
 
 ```bash
 npm install
-npx sst dev --non-interactive
+npx sst dev
 ```
+
+This starts SST's multiplexer which deploys your infrastructure and runs the Astro dev server locally. You'll see a tabbed interface with:
+- **Deploy** - SST infrastructure deployment
+- **MyWeb** - Your Astro dev server at http://localhost:4321
 
 ```
 SST 3.x
@@ -391,10 +395,9 @@ SST 3.x
 ✓ Built
 ✓ Deployed:
   API:     https://abc123.execute-api.us-east-1.amazonaws.com
-  Web:     http://localhost:4321
 ```
 
-Open http://localhost:4321 to see your todo app running.
+Click on **MyWeb** in the sidebar to see the Astro dev server output, then open http://localhost:4321 in your browser.
 
 ---
 
@@ -439,4 +442,4 @@ apm compile
 | Compile | `apm compile` | AGENTS.md generated |
 | Build | `opencode` → `@fullstack-developer` | SST + Astro app |
 | Review | `/code-review` | Code analyzed |
-| Run | `npx sst dev --non-interactive` | App running |
+| Run | `npx sst dev` | App running locally |
