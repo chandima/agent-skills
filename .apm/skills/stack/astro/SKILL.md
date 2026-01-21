@@ -151,6 +151,20 @@ const products = await getProducts();
 
 ## SST Integration
 
+When deploying Astro with SST, configure the dev command to prevent recursion:
+
+```typescript
+// sst.config.ts
+new sst.aws.Astro("Web", {
+  link: [bucket],
+  dev: {
+    command: "astro dev",
+  },
+});
+```
+
+Access linked resources in API routes:
+
 ```typescript
 // src/pages/api/upload.ts
 import { Resource } from 'sst';

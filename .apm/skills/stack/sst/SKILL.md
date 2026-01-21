@@ -30,7 +30,12 @@ export default $config({
   },
   async run() {
     const bucket = new sst.aws.Bucket("Uploads");
-    new sst.aws.Astro("Web", { link: [bucket] });
+    new sst.aws.Astro("Web", {
+      link: [bucket],
+      dev: {
+        command: "astro dev",
+      },
+    });
   },
 });
 ```
@@ -53,7 +58,12 @@ export const bucket = new sst.aws.Bucket("Uploads");
 
 // infra/web.ts
 import { bucket } from "./storage";
-new sst.aws.Astro("Web", { link: [bucket] });
+new sst.aws.Astro("Web", {
+  link: [bucket],
+  dev: {
+    command: "astro dev",
+  },
+});
 ```
 
 ## Component Selection
@@ -80,6 +90,9 @@ const database = new sst.aws.Postgres("Database", { vpc });
 // Link to Astro
 new sst.aws.Astro("Web", {
   link: [bucket, database],
+  dev: {
+    command: "astro dev",
+  },
 });
 ```
 

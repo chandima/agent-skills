@@ -379,19 +379,8 @@ Install dependencies and start the SST dev environment:
 
 ```bash
 npm install
-npx sst dev
+npm run dev
 ```
-
-> **Important**: Your `package.json` scripts must run the framework directly, not SST:
-> ```json
-> {
->   "scripts": {
->     "dev": "astro dev",
->     "build": "astro build"
->   }
-> }
-> ```
-> SST's multiplexer calls `npm run dev` to start your frontend. If `dev` is set to `sst dev`, you'll get a recursion error.
 
 This starts SST's multiplexer which deploys your infrastructure and runs the Astro dev server locally. You'll see a tabbed interface with:
 - **Deploy** - SST infrastructure deployment  
@@ -451,4 +440,4 @@ apm compile
 | Compile | `apm compile` | AGENTS.md generated |
 | Build | `opencode` → `@fullstack-developer` | SST + Astro app |
 | Review | `/code-review` | Code analyzed |
-| Run | `npx sst dev` | App running locally |
+| Run | `npm run dev` | App running locally |
