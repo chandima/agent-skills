@@ -1,0 +1,7 @@
+name: agent-skills
+version: 1.0.0
+description: Development standards, workflows, and AI agent configurations for consistent, high-quality software development
+
+dependencies:
+  apm:
+    - vercel-labs/agent-browser # Browser automation skill
