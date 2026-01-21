@@ -4,6 +4,8 @@
 
 Development standards, workflows, and AI agent configurations for consistent, high-quality software development.
 
+> **New to APM primitives?** See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for a complete explanation of how instructions, prompts, agents, skills, and context files work together.
+
 ## Architecture
 
 This package uses a **lightweight agents + modular skills** architecture:
@@ -73,13 +75,13 @@ apm compile --target claude-code --target opencode
 
 ### Skills (Expertise Modules)
 
-Fine-grained knowledge packages loaded by agents:
+Fine-grained knowledge packages loaded by agents. Skills focus on **detection methodology** (how to find issues) rather than coding patterns (which belong in instructions):
 
 | Domain | Skills | Purpose |
 |--------|--------|---------|
-| **review/** | `code`, `security` | Code quality, security vulnerabilities |
+| **review/** | `code`, `security` | Review methodology, vulnerability detection |
 | **testing/** | `strategy`, `e2e` | Testing pyramid, Playwright/agent-browser |
-| **devops/** | `cicd`, `containers`, `iac`, `security` | CI/CD, Docker, Terraform, DevSecOps |
+| **devops/** | `cicd`, `containers`, `iac`, `security` | Pipeline audit, Dockerfile review, IaC review |
 | **architecture/** | `patterns` | System design, trade-off analysis |
 | **stack/** | `sst`, `astro`, `alpine`, `basecoat` | Full-stack technology expertise |
 
@@ -94,6 +96,8 @@ Fine-grained knowledge packages loaded by agents:
 | `@fullstack-developer` | stack/sst, astro, alpine, basecoat | SST + Astro stack |
 
 ### Instructions (Coding Standards)
+
+Auto-applied guardrails that define **how to write code** (vs. skills which define how to review code):
 
 | File | Applies To | Purpose |
 |------|------------|---------|
@@ -208,6 +212,19 @@ This package works alongside MCP servers for enhanced capabilities:
 ## Customization
 
 After installing, customize any file in your project's `.apm/` directory. Local changes take precedence over package defaults.
+
+## Primitive Architecture
+
+This package follows the [AI-Native Development framework](docs/FRAMEWORK.md). Key distinction:
+
+| Primitive | Purpose | Content Type |
+|-----------|---------|--------------|
+| **Instructions** | HOW TO WRITE code | Coding rules, patterns, examples |
+| **Skills** | HOW TO FIND issues | Detection methodology, grep patterns |
+| **Prompts** | Workflow execution | Orchestration steps |
+| **Agents** | AI personas | Identity, tool permissions, skill refs |
+
+For a complete explanation, see [docs/FRAMEWORK.md](docs/FRAMEWORK.md).
 
 ## Contributing
 
