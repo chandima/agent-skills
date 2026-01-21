@@ -114,6 +114,7 @@ apm install chandima/agent-skills/.apm/instructions/typescript.instructions.md
 | `code-reviewer.agent.md` | `@code-reviewer` |
 | `architect.agent.md` | `@architect` |
 | `test-engineer.agent.md` | `@test-engineer` |
+| `devops-engineer.agent.md` | `@devops-engineer` |
 
 **Instructions** (install individually with `/.apm/instructions/<name>.instructions.md`):
 | File | Applies To |
@@ -123,6 +124,10 @@ apm install chandima/agent-skills/.apm/instructions/typescript.instructions.md
 | `json-schema.instructions.md` | `**/*.schema.json` |
 | `git.instructions.md` | All files |
 | `security.instructions.md` | All code files |
+| `github-actions.instructions.md` | `.github/workflows/**/*.{yml,yaml}` |
+| `terraform.instructions.md` | `**/*.tf` |
+| `jenkins.instructions.md` | `**/Jenkinsfile*` |
+| `docker.instructions.md` | `**/Dockerfile*` |
 
 ### Add as a Dependency in Your Package
 
@@ -213,6 +218,10 @@ apm install your-username/my-skills
 | `json-schema.instructions.md` | `**/*.schema.json` | Draft-04 compatibility, `$ref` patterns |
 | `git.instructions.md` | All files | Commit format, PR guidelines, branch naming |
 | `security.instructions.md` | All code files | No secrets, input validation, dependency checks |
+| `github-actions.instructions.md` | `.github/workflows/**/*.{yml,yaml}` | OIDC, permissions, reusable workflows, caching |
+| `terraform.instructions.md` | `**/*.tf` | HCL patterns, modules, state management, CI/CD |
+| `jenkins.instructions.md` | `**/Jenkinsfile*` | Declarative pipelines, shared libraries, credentials |
+| `docker.instructions.md` | `**/Dockerfile*` | Multi-stage builds, security, layer optimization |
 
 ### Prompts (Workflows)
 
@@ -231,6 +240,7 @@ apm install your-username/my-skills
 | `@code-reviewer` | Code quality, bugs, best practices |
 | `@architect` | System design, patterns, scalability |
 | `@test-engineer` | Test coverage, edge cases, reliability |
+| `@devops-engineer` | CI/CD pipelines, infrastructure as code, containers |
 
 ## Usage Examples
 
@@ -249,6 +259,7 @@ apm install your-username/my-skills
 @code-reviewer Please review the changes in src/auth/
 @architect How should I structure a caching layer for this API?
 @test-engineer What test cases should I write for the payment flow?
+@devops-engineer Set up a CI/CD pipeline for this Node.js project
 ```
 
 ## Customization

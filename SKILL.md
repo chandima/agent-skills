@@ -30,6 +30,10 @@ Coding standards that apply automatically based on file patterns:
 | JSON Schema | `**/*.schema.json` | Draft-04 compatibility, `$ref` patterns |
 | Git | All files | Conventional commits, PR guidelines |
 | Security | All code | No secrets, input validation, dependency checks |
+| GitHub Actions | `.github/workflows/**/*.{yml,yaml}` | OIDC, permissions, reusable workflows |
+| Terraform | `**/*.tf` | HCL patterns, modules, state management |
+| Jenkins | `**/Jenkinsfile*` | Declarative pipelines, shared libraries |
+| Docker | `**/Dockerfile*` | Multi-stage builds, security, layer optimization |
 
 ### Prompts (Workflows)
 Reusable commands for common development tasks:
@@ -50,6 +54,7 @@ Specialized AI assistants for focused tasks:
 | Code Reviewer | `@code-reviewer` | Quality-focused code analysis (read-only) |
 | Architect | `@architect` | System design and patterns advisor |
 | Test Engineer | `@test-engineer` | Testing strategy, Playwright, coverage |
+| DevOps Engineer | `@devops-engineer` | CI/CD pipelines, IaC, containerization |
 
 ## Scripts
 
@@ -118,6 +123,7 @@ This package works best when combined with MCP servers for enhanced context. The
 | `@code-reviewer` | GitHub MCP | Repository context, PR details |
 | `@architect` | AWS MCP, Context7, n8n-mcp | Infrastructure patterns, library docs, workflow automation |
 | `@test-engineer` | (uses agent-browser) | Browser automation for E2E testing |
+| `@devops-engineer` | GitHub MCP, Terraform MCP | CI/CD context, infrastructure state |
 
 ### n8n Workflow Automation
 
@@ -180,6 +186,28 @@ This enables code search across organization repositories using:
 - `search_repositories` for repo discovery
 - `list_pull_requests` for tracking work
 
+### Terraform MCP
+
+For Terraform/OpenTofu workflows, the Terraform MCP server provides:
+- Provider and resource documentation lookup
+- State file inspection and drift detection
+- Module registry search
+- Plan output interpretation
+
+```json
+{
+  "terraform-mcp": {
+    "command": "npx",
+    "args": ["terraform-mcp-server"],
+    "env": {
+      "TERRAFORM_BINARY": "terraform"
+    }
+  }
+}
+```
+
+Use with the `@devops-engineer` agent for infrastructure automation tasks.
+
 ### Skills vs MCP Strategy
 
 This package follows a **Skills-first** approach:
@@ -197,7 +225,11 @@ This keeps the package lightweight while providing guidance for enhanced capabil
 │   ├── astro.instructions.md
 │   ├── json-schema.instructions.md
 │   ├── git.instructions.md
-│   └── security.instructions.md
+│   ├── security.instructions.md
+│   ├── github-actions.instructions.md
+│   ├── terraform.instructions.md
+│   ├── jenkins.instructions.md
+│   └── docker.instructions.md
 ├── prompts/          # Reusable workflow commands
 │   ├── code-review.prompt.md
 │   ├── pr-description.prompt.md
@@ -207,7 +239,8 @@ This keeps the package lightweight while providing guidance for enhanced capabil
 └── agents/           # Specialized AI personas
     ├── code-reviewer.agent.md
     ├── architect.agent.md
-    └── test-engineer.agent.md
+    ├── test-engineer.agent.md
+    └── devops-engineer.agent.md
 ```
 
 ## Quick Start
