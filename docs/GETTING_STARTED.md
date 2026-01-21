@@ -247,56 +247,6 @@ import Layout from '../layouts/Layout.astro';
 </script>
 ```
 
-### Add API Routes
-
-```
-You: Add the API routes for CRUD operations
-
-Agent: Adding API routes with DynamoDB storage...
-
-[Creates: src/lib/db.ts, src/lib/types.ts]
-[Creates: src/pages/api/todos/index.ts, src/pages/api/todos/[id].ts]
-```
-
-```typescript
-// src/lib/db.ts
-import { Resource } from "sst";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
-
-export const db = DynamoDBDocument.from(new DynamoDBClient({}));
-export const tableName = Resource.Todos.name;
-```
-
-```typescript
-// src/pages/api/todos/index.ts
-import type { APIRoute } from 'astro';
-import { db, tableName } from '../../../lib/db';
-
-export const GET: APIRoute = async () => {
-  const result = await db.scan({ TableName: tableName });
-  return new Response(JSON.stringify(result.Items));
-};
-
-export const POST: APIRoute = async ({ request }) => {
-  const { text } = await request.json();
-  const todo = { id: crypto.randomUUID(), text, completed: false };
-  await db.put({ TableName: tableName, Item: todo });
-  return new Response(JSON.stringify(todo));
-};
-```
-
-```typescript
-// src/pages/api/todos/[id].ts
-import type { APIRoute } from 'astro';
-import { db, tableName } from '../../../lib/db';
-
-export const DELETE: APIRoute = async ({ params }) => {
-  await db.delete({ TableName: tableName, Key: { id: params.id } });
-  return new Response(null, { status: 204 });
-};
-```
-
 ### Final Structure
 
 ```
