@@ -158,10 +158,10 @@ You: @fullstack-developer Create a todo app with SST, Astro, and Alpine.js.
 Agent: I'll create an SST + Astro todo app with our standard stack.
 
 Creating project structure...
-[Creates: sst.config.ts, package.json, tsconfig.json]
-[Creates: packages/web/ - Astro frontend]
-[Creates: packages/functions/ - Lambda handlers]
-[Creates: packages/core/ - Shared types]
+[Creates: sst.config.ts, package.json, tsconfig.json, astro.config.mjs]
+[Creates: src/pages/ - Astro pages and API routes]
+[Creates: src/lib/ - Database and shared code]
+[Creates: src/layouts/ - Astro layouts]
 
 Setting up SST infrastructure with DynamoDB table and API routes...
 
@@ -176,22 +176,22 @@ You: Add the todo list page with Basecoat UI components and Alpine.js
 Agent: Creating the todo page with Basecoat card components and Alpine.js 
 for reactivity...
 
-[Creates: packages/web/src/pages/index.astro]
+[Creates: src/pages/index.astro]
 ```
 
 ```astro
 ---
-// packages/web/src/pages/index.astro
+// src/pages/index.astro
 import Layout from '../layouts/Layout.astro';
-import { Card, Button, Input } from '@basecoat/ui';
 ---
 
 <Layout title="Todo App">
   <div x-data="todoApp()" class="max-w-md mx-auto p-4">
-    <Card>
-      <form @submit.prevent="addTodo">
-        <Input x-model="newTodo" placeholder="What needs to be done?" />
-        <Button type="submit">Add</Button>
+    <div class="card">
+      <form @submit.prevent="addTodo" class="flex gap-2">
+        <input x-model="newTodo" placeholder="What needs to be done?" 
+               class="input flex-1" />
+        <button type="submit" class="btn btn-primary">Add</button>
       </form>
       
       <ul class="mt-4 space-y-2">
@@ -200,11 +200,11 @@ import { Card, Button, Input } from '@basecoat/ui';
             <input type="checkbox" :checked="todo.completed" 
                    @change="toggleTodo(todo.id)">
             <span x-text="todo.text" :class="todo.completed && 'line-through'"></span>
-            <Button size="sm" variant="ghost" @click="deleteTodo(todo.id)">×</Button>
+            <button class="btn btn-ghost btn-sm" @click="deleteTodo(todo.id)">×</button>
           </li>
         </template>
       </ul>
-    </Card>
+    </div>
   </div>
 </Layout>
 
@@ -243,59 +243,74 @@ You: Add the API routes for CRUD operations
 
 Agent: Adding API routes with DynamoDB storage...
 
-[Creates: packages/functions/src/todos.ts]
+[Creates: src/lib/db.ts, src/lib/types.ts]
+[Creates: src/pages/api/todos/index.ts, src/pages/api/todos/[id].ts]
 ```
 
 ```typescript
-// packages/functions/src/todos.ts
+// src/lib/db.ts
 import { Resource } from "sst";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 
-const db = DynamoDBDocument.from(new DynamoDBClient({}));
+export const db = DynamoDBDocument.from(new DynamoDBClient({}));
+export const tableName = Resource.Todos.name;
+```
 
-export async function list() {
-  const result = await db.scan({ TableName: Resource.Todos.name });
+```typescript
+// src/pages/api/todos/index.ts
+import type { APIRoute } from 'astro';
+import { db, tableName } from '../../../lib/db';
+
+export const GET: APIRoute = async () => {
+  const result = await db.scan({ TableName: tableName });
   return new Response(JSON.stringify(result.Items));
-}
+};
 
-export async function create(event: { body: string }) {
-  const { text } = JSON.parse(event.body);
+export const POST: APIRoute = async ({ request }) => {
+  const { text } = await request.json();
   const todo = { id: crypto.randomUUID(), text, completed: false };
-  await db.put({ TableName: Resource.Todos.name, Item: todo });
+  await db.put({ TableName: tableName, Item: todo });
   return new Response(JSON.stringify(todo));
-}
+};
+```
 
-export async function remove(event: { pathParameters: { id: string } }) {
-  await db.delete({ 
-    TableName: Resource.Todos.name, 
-    Key: { id: event.pathParameters.id } 
-  });
+```typescript
+// src/pages/api/todos/[id].ts
+import type { APIRoute } from 'astro';
+import { db, tableName } from '../../../lib/db';
+
+export const DELETE: APIRoute = async ({ params }) => {
+  await db.delete({ TableName: tableName, Key: { id: params.id } });
   return new Response(null, { status: 204 });
-}
+};
 ```
 
 ### Final Structure
 
 ```
 todo-app/
-├── sst.config.ts              # SST infrastructure
-├── package.json
-├── packages/
-│   ├── web/
-│   │   └── src/
-│   │       ├── pages/
-│   │       │   └── index.astro    # Todo UI with Alpine.js
-│   │       └── layouts/
-│   │           └── Layout.astro
-│   ├── functions/
-│   │   └── src/
-│   │       └── todos.ts           # API routes
-│   └── core/
-│       └── src/
-│           └── types.ts           # Shared types
+├── .github/               # APM agents, prompts, skills
+├── .sst/                  # SST build output
+├── src/
+│   ├── layouts/
+│   │   └── Layout.astro
+│   ├── lib/
+│   │   ├── db.ts          # DynamoDB client
+│   │   └── types.ts       # Shared types
+│   └── pages/
+│       ├── api/
+│       │   └── todos/
+│       │       ├── index.ts   # GET, POST
+│       │       └── [id].ts    # DELETE
+│       └── index.astro    # Todo UI with Alpine.js
 ├── AGENTS.md
-└── apm.yml
+├── apm.yml
+├── astro.config.mjs
+├── package.json
+├── sst.config.ts          # SST infrastructure
+├── tailwind.config.mjs
+└── tsconfig.json
 ```
 
 ---
@@ -313,11 +328,11 @@ Agent: Loading skill: review/security
 Applying security detection methodology...
 
 Checking for hardcoded secrets:
-  grep -rE "(api[_-]?key|password|secret)" packages/functions/
+  grep -rE "(api[_-]?key|password|secret)" src/
   ✓ No hardcoded secrets found
 
 Checking for input validation:
-  ⚠ packages/functions/src/todos.ts:12 - Missing input validation
+  ⚠ src/pages/api/todos/index.ts:12 - Missing input validation
   
 Recommendation: Add zod schema validation for the request body.
 ```
