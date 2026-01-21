@@ -258,7 +258,17 @@ After installing, you can customize any file in your project's `.apm/` directory
 ## Dependencies
 
 This package includes:
-- `vercel-labs/agent-browser` - Browser automation capabilities for E2E testing
+- `vercel-labs/agent-browser` - Browser automation CLI for E2E testing ([full command reference](https://github.com/vercel-labs/agent-browser/blob/main/skills/agent-browser/SKILL.md))
+- `vercel-labs/agent-skills#web-design-guidelines` - 100+ UI/UX/accessibility audit rules
+
+### Optional Dependencies
+
+Install separately if needed:
+
+```bash
+# n8n workflow automation (requires n8n-mcp MCP server)
+apm install czlonkowski/n8n-skills
+```
 
 ## MCP Server Compatibility
 
@@ -269,6 +279,7 @@ This skills package is designed to work alongside MCP (Model Context Protocol) s
 | Server | Use Case | Benefits |
 |--------|----------|----------|
 | **GitHub MCP** | Code review, PR workflows | PR context, issue tracking, code search across repos |
+| **n8n-mcp** | Workflow automation | n8n node docs, validation, workflow management |
 | **AWS MCP Servers** | Infrastructure code | CDK/CloudFormation guidance, security validation |
 | **Context7** | Library documentation | Up-to-date docs for any framework/library |
 | **Figma MCP** | Design-to-code | Design context for UI component implementation |
@@ -333,6 +344,38 @@ For up-to-date library documentation:
 ```
 
 Use by adding `use context7` to your prompts or configure auto-invocation rules.
+
+### n8n-mcp (Workflow Automation)
+
+For building n8n workflows programmatically:
+
+```json
+{
+  "n8n-mcp": {
+    "command": "npx",
+    "args": ["n8n-mcp"],
+    "env": {
+      "MCP_MODE": "stdio",
+      "N8N_API_URL": "https://your-n8n-instance.com",
+      "N8N_API_KEY": "your-api-key"
+    }
+  }
+}
+```
+
+**n8n-mcp** provides access to 1,084 n8n nodes, validation, and 2,709 workflow templates. For best results, also install the **n8n-skills**:
+
+```bash
+apm install czlonkowski/n8n-skills
+```
+
+The 7 n8n skills teach AI agents:
+- Correct expression syntax (`{{}}` patterns)
+- Effective MCP tool usage
+- Proven workflow patterns
+- Validation error interpretation
+- Node configuration best practices
+- Code node patterns (JavaScript/Python)
 
 ## Contributing
 
