@@ -349,6 +349,11 @@ You: !npm install
 You: !npm run dev
 ```
 
+> **Note**: If you use AWS SSO or named profiles, set your profile before running:
+> ```
+> !AWS_PROFILE=your-profile npm run dev
+> ```
+
 This starts SST's multiplexer which deploys your infrastructure and runs the Astro dev server locally. You'll see a tabbed interface with:
 - **Deploy** - SST infrastructure deployment  
 - **Web** - Your Astro dev server
