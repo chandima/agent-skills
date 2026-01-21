@@ -143,7 +143,8 @@ SKILL.md
 |-----------|---------|
 | `AGENTS.md` | Compiled instructions OpenCode reads |
 | `.github/agents/` | Agent personas with tool permissions |
-| `.github/prompts/` | Executable workflow commands |
+| `.github/prompts/` | Workflow templates (reference material) |
+| `.github/skills/` | On-demand skills loaded via `@` |
 | `apm.yml` | Package dependencies |
 
 ---
@@ -276,50 +277,63 @@ todo-app/
 
 ---
 
-## 6. Review Code with /code-review
+## 6. Review Code with Skills
 
-Prompts are executable workflows. Run them with `/`:
-
-```
-You: /code-review
-```
+APM installs reusable skills that OpenCode can load on demand. Use `@` to reference a skill:
 
 ```
-Agent: Running code review workflow...
+You: @review Review the todo app code
+```
 
-Analyzing: src/pages/api/todos/index.ts, src/pages/index.astro
+Type `@review` and OpenCode will show matching skills you can select:
+- `.github/skills/agent-skills/.apm/skills/review/code/` - Code quality review
+- `.github/skills/agent-skills/.apm/skills/review/security/` - Security review
 
-## CODE REVIEW REPORT
+The agent reads the skill, analyzes your code, and produces a structured review:
 
-**Files Reviewed**: 2 files
-**Overall Assessment**: Pass with suggestions
+```
+Agent: I'll perform a code review using the code review methodology.
 
-### High Priority
-| Location | Issue | Recommendation |
-|----------|-------|----------------|
-| index.ts:12 | Missing input validation | Add zod schema for request body |
-| index.ts:8 | No error handling | Wrap DynamoDB calls in try/catch |
+Reading src/lib/types.ts, sst.config.ts, src/pages/index.astro...
+
+## Code Review: Todo App
+
+### Summary
+Well-structured app with good separation of concerns and proper TypeScript 
+typing. A few improvements to address around performance and accessibility.
+
+### Recommendations
+
+1. **Sequential deletion in clearCompleted** (index.astro:143)
+   Deletes todos one by one. Use `Promise.all` for parallel deletion.
+
+2. **Missing focus trap on dialog** (index.astro:336)
+   Add `x-trap.inert` for accessibility.
+
+3. **Unpinned Alpine.js CDN version** (Layout.astro:20)
+   Pin to specific version: `alpinejs@3.14.3`
 
 ### Suggestions
-- Add loading state to UI while fetching todos
-- Consider optimistic updates for better UX
-- Add rate limiting to API routes
+- Add optimistic UI updates for better UX
+- Add `aria-live` region for screen reader announcements
 
 ### Positive Notes
-- Clean separation between API and UI
-- Good use of Alpine.js for reactivity
-- Type-safe SST resource references
+- Clean architecture with good separation of concerns
+- Proper TypeScript interfaces for all data structures
+- Smart DynamoDB design with timestamp-based sort keys
+
+Would you like me to implement any of these fixes?
 ```
 
-### Other Prompts
+### Available Skills
 
-| Command | Purpose |
-|---------|---------|
-| `/code-review` | Security, bugs, performance review |
-| `/pr-description` | Generate PR description from changes |
-| `/debug-issue` | Structured debugging workflow |
-| `/refactor` | Safe refactoring with test preservation |
-| `/test-plan` | Generate comprehensive test cases |
+| Skill | Purpose |
+|-------|---------|
+| `review/code` | Code quality, bugs, performance |
+| `review/security` | Security vulnerability detection |
+| `stack/sst` | SST infrastructure patterns |
+| `stack/astro` | Astro component patterns |
+| `stack/alpine` | Alpine.js reactivity patterns |
 
 ---
 
@@ -351,7 +365,20 @@ Click on the **Web** tab to see the Astro dev server output. Once it shows `Loca
 
 ## Next Steps
 
-### Try Other Agents
+### Try Other Skills
+
+Use `@` to load skills on demand:
+
+```
+@review         # Code review methodology
+@stack/sst      # SST infrastructure patterns
+@stack/astro    # Astro component patterns  
+@stack/alpine   # Alpine.js reactivity patterns
+```
+
+### Use Agent Personas
+
+Reference agent personas for specialized tasks:
 
 ```
 @architect      # System design and trade-off analysis
@@ -386,8 +413,8 @@ apm compile
 | Step | Command | Result |
 |------|---------|--------|
 | Create | `mkdir todo-app && git init` | Empty repo |
-| Install | `apm install chandima/agent-skills` | Agents, prompts |
+| Install | `apm install chandima/agent-skills` | Skills installed |
 | Compile | `apm compile` | AGENTS.md generated |
 | Build | `opencode` → `@fullstack-developer` | SST + Astro app |
-| Review | `/code-review` | Code analyzed |
+| Review | `@review` | Code analyzed |
 | Run | `npm run dev` | App running locally |
