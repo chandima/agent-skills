@@ -6,11 +6,22 @@ Development standards, workflows, and AI agent configurations for consistent, hi
 
 ## Installation
 
-```bash
-# Install APM if you haven't already
-curl -sSL https://raw.githubusercontent.com/danielmeppiel/apm/main/install.sh | sh
+### Install APM
 
-# Install this package
+**macOS (Homebrew)**
+```bash
+brew install danielmeppiel/tap/apm
+```
+
+**Other platforms**
+```bash
+curl -sSL https://raw.githubusercontent.com/danielmeppiel/apm/main/install.sh | sh
+```
+
+### Install this package
+
+```bash
+# Install the skills package
 apm install chandima/agent-skills
 
 # Compile for your AI tools
