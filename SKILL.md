@@ -1,9 +1,9 @@
 ---
 name: agent-skills
-description: Development standards, workflows, and AI agent configurations for TypeScript, Astro, and modern web development. Use when setting up coding standards, running code reviews, creating PRs, debugging issues, or planning tests.
+description: Development standards, workflows, and AI agent configurations for SST, Astro, Alpine.js, and modern full-stack development. Use when setting up coding standards, running code reviews, creating PRs, debugging issues, or planning tests.
 metadata:
   author: chandima
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Agent Skills Package
@@ -26,7 +26,9 @@ Coding standards that apply automatically based on file patterns:
 | Instruction | File Pattern | Key Rules |
 |-------------|--------------|-----------|
 | TypeScript | `**/*.{ts,tsx}` | Strict types, no `any`, explicit returns |
-| Astro | `**/*.astro` | Component patterns, Tailwind, accessibility |
+| Astro | `**/*.astro` | Basecoat UI, Alpine.js, Islands architecture |
+| Alpine.js | `**/*.{astro,html}` | Directives, magics, plugins, state patterns |
+| SST | `**/sst.config.ts` | AWS components, linking, Pulumi integration |
 | JSON Schema | `**/*.schema.json` | Draft-04 compatibility, `$ref` patterns |
 | Git | All files | Conventional commits, PR guidelines |
 | Security | All code | No secrets, input validation, dependency checks |
@@ -55,6 +57,7 @@ Specialized AI assistants for focused tasks:
 | Architect | `@architect` | System design and patterns advisor |
 | Test Engineer | `@test-engineer` | Testing strategy, Playwright, coverage |
 | DevOps Engineer | `@devops-engineer` | CI/CD pipelines, IaC, containerization |
+| Full-Stack Developer | `@fullstack-developer` | SST, Astro, Alpine.js, Basecoat UI stack |
 
 ## Scripts
 
@@ -124,6 +127,7 @@ This package works best when combined with MCP servers for enhanced context. The
 | `@architect` | AWS MCP, Context7, n8n-mcp | Infrastructure patterns, library docs, workflow automation |
 | `@test-engineer` | (uses agent-browser) | Browser automation for E2E testing |
 | `@devops-engineer` | GitHub MCP, Terraform MCP | CI/CD context, infrastructure state |
+| `@fullstack-developer` | Context7, SST Console | Library docs, deployment monitoring |
 
 ### n8n Workflow Automation
 
@@ -223,6 +227,8 @@ This keeps the package lightweight while providing guidance for enhanced capabil
 ├── instructions/     # Coding standards (auto-applied by file pattern)
 │   ├── typescript.instructions.md
 │   ├── astro.instructions.md
+│   ├── alpinejs.instructions.md
+│   ├── sst.instructions.md
 │   ├── json-schema.instructions.md
 │   ├── git.instructions.md
 │   ├── security.instructions.md
@@ -240,7 +246,8 @@ This keeps the package lightweight while providing guidance for enhanced capabil
     ├── code-reviewer.agent.md
     ├── architect.agent.md
     ├── test-engineer.agent.md
-    └── devops-engineer.agent.md
+    ├── devops-engineer.agent.md
+    └── fullstack-developer.agent.md
 ```
 
 ## Quick Start
@@ -258,6 +265,7 @@ apm compile
 @code-reviewer review the authentication module
 @architect design a caching layer
 @test-engineer write E2E tests for checkout flow
+@fullstack-developer set up a file upload feature with SST and Alpine.js
 ```
 
 ## When to Use This Package

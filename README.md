@@ -115,12 +115,15 @@ apm install chandima/agent-skills/.apm/instructions/typescript.instructions.md
 | `architect.agent.md` | `@architect` |
 | `test-engineer.agent.md` | `@test-engineer` |
 | `devops-engineer.agent.md` | `@devops-engineer` |
+| `fullstack-developer.agent.md` | `@fullstack-developer` |
 
 **Instructions** (install individually with `/.apm/instructions/<name>.instructions.md`):
 | File | Applies To |
 |------|------------|
 | `typescript.instructions.md` | `**/*.{ts,tsx}` |
 | `astro.instructions.md` | `**/*.astro` |
+| `alpinejs.instructions.md` | `**/*.{astro,html}` |
+| `sst.instructions.md` | `**/sst.config.ts` |
 | `json-schema.instructions.md` | `**/*.schema.json` |
 | `git.instructions.md` | All files |
 | `security.instructions.md` | All code files |
@@ -214,7 +217,9 @@ apm install your-username/my-skills
 | File | Applies To | Purpose |
 |------|------------|---------|
 | `typescript.instructions.md` | `**/*.{ts,tsx}` | Strict types, no `any`, explicit returns |
-| `astro.instructions.md` | `**/*.astro` | Component structure, Tailwind, accessibility |
+| `astro.instructions.md` | `**/*.astro` | Basecoat UI, Alpine.js, Islands architecture |
+| `alpinejs.instructions.md` | `**/*.{astro,html}` | Directives, magics, plugins, state patterns |
+| `sst.instructions.md` | `**/sst.config.ts` | AWS components, linking, Pulumi integration |
 | `json-schema.instructions.md` | `**/*.schema.json` | Draft-04 compatibility, `$ref` patterns |
 | `git.instructions.md` | All files | Commit format, PR guidelines, branch naming |
 | `security.instructions.md` | All code files | No secrets, input validation, dependency checks |
@@ -241,6 +246,7 @@ apm install your-username/my-skills
 | `@architect` | System design, patterns, scalability |
 | `@test-engineer` | Test coverage, edge cases, reliability |
 | `@devops-engineer` | CI/CD pipelines, infrastructure as code, containers |
+| `@fullstack-developer` | SST, Astro, Alpine.js, Basecoat UI stack |
 
 ## Usage Examples
 
@@ -260,6 +266,7 @@ apm install your-username/my-skills
 @architect How should I structure a caching layer for this API?
 @test-engineer What test cases should I write for the payment flow?
 @devops-engineer Set up a CI/CD pipeline for this Node.js project
+@fullstack-developer Build a file upload feature with S3 storage and progress indicator
 ```
 
 ## Customization
