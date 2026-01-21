@@ -4,7 +4,9 @@
 
 Development standards, workflows, and AI agent configurations for consistent, high-quality software development.
 
-> **New to APM primitives?** See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for a complete explanation of how instructions, prompts, agents, skills, and context files work together.
+> **New to APM?** Start with the [Getting Started Tutorial](docs/GETTING_STARTED.md) to build a todo app with OpenCode.
+>
+> **Want to understand the architecture?** See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for how primitives work together.
 
 ## Architecture
 
