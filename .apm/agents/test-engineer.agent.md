@@ -171,111 +171,31 @@ test('complete checkout flow', async ({ page }) => {
 
 ### Browser Testing with agent-browser
 
-For E2E browser testing, use the `agent-browser` CLI from the `vercel-labs/agent-browser` APM dependency. This provides AI-friendly browser automation without the complexity of raw Playwright/Selenium setup.
+For E2E browser testing, use the `agent-browser` CLI from the `vercel-labs/agent-browser` APM dependency.
 
-#### Installation
+> **Skill Reference**: The full command reference is available in the official skill at `vercel-labs/agent-browser/skills/agent-browser/SKILL.md`. Run `agent-browser --help` for all commands.
+
+#### Quick Start
 
 ```bash
+# Install
 npm install -g agent-browser
 agent-browser install  # Download Chromium
+
+# Core workflow
+agent-browser open <url>        # Navigate to page
+agent-browser snapshot -i       # Get interactive elements with refs (@e1, @e2)
+agent-browser click @e1         # Click element by ref
+agent-browser fill @e2 "text"   # Fill input by ref
+agent-browser close             # Close browser
 ```
 
-#### Core Workflow
+#### Why agent-browser?
 
-```bash
-# 1. Navigate to page
-agent-browser open http://localhost:3000
-
-# 2. Get accessibility tree with refs (AI-friendly)
-agent-browser snapshot -i  # -i = interactive elements only
-# Output:
-# - heading "Welcome" [ref=e1] [level=1]
-# - textbox "Email" [ref=e2]
-# - textbox "Password" [ref=e3]
-# - button "Sign In" [ref=e4]
-
-# 3. Interact using refs
-agent-browser fill @e2 "test@example.com"
-agent-browser fill @e3 "password123"
-agent-browser click @e4
-
-# 4. Re-snapshot after page changes
-agent-browser snapshot -i
-
-# 5. Verify state
-agent-browser get text @e1  # Get text content
-agent-browser is visible @e2  # Check visibility
-
-# 6. Close when done
-agent-browser close
-```
-
-#### Common Commands
-
-| Command | Purpose | Example |
-|---------|---------|---------|
-| `open <url>` | Navigate to URL | `agent-browser open example.com` |
-| `snapshot -i` | Get interactive elements with refs | `agent-browser snapshot -i` |
-| `click @ref` | Click element by ref | `agent-browser click @e2` |
-| `fill @ref "text"` | Fill input by ref | `agent-browser fill @e3 "hello"` |
-| `get text @ref` | Get element text | `agent-browser get text @e1` |
-| `screenshot [path]` | Take screenshot | `agent-browser screenshot test.png` |
-| `wait <selector>` | Wait for element | `agent-browser wait "#loading"` |
-| `wait --load networkidle` | Wait for network idle | `agent-browser wait --load networkidle` |
-| `close` | Close browser | `agent-browser close` |
-
-#### Snapshot Options
-
-```bash
-agent-browser snapshot           # Full accessibility tree
-agent-browser snapshot -i        # Interactive elements only (recommended)
-agent-browser snapshot -c        # Compact (remove empty structural elements)
-agent-browser snapshot -d 3      # Limit depth to 3 levels
-agent-browser snapshot -i -c     # Combine options
-```
-
-#### E2E Test Example: Login Flow
-
-```bash
-# Start fresh session
-agent-browser open http://localhost:3000/login
-
-# Get form elements
-agent-browser snapshot -i
-# Output shows refs for email (@e2), password (@e3), submit (@e4)
-
-# Fill and submit
-agent-browser fill @e2 "test@example.com"
-agent-browser fill @e3 "SecurePass123!"
-agent-browser click @e4
-
-# Wait for navigation and verify
-agent-browser wait --load networkidle
-agent-browser snapshot -i
-# Verify dashboard elements are present
-
-agent-browser close
-```
-
-#### Sessions for Parallel Testing
-
-```bash
-# Run isolated browser instances
-agent-browser --session test1 open site-a.com
-agent-browser --session test2 open site-b.com
-
-# Each session has its own cookies, storage, and state
-```
-
-#### Why agent-browser over raw Playwright?
-
-| Feature | agent-browser | Raw Playwright |
-|---------|---------------|----------------|
-| AI-friendly | Snapshot with refs | Requires selector discovery |
-| Setup | Single CLI install | Project dependencies |
-| Context efficiency | Minimal output | Large context pollution |
-| Headless default | Yes | Configurable |
-| Sessions | Built-in isolation | Manual setup |
+- **AI-friendly**: Snapshot returns refs (@e1, @e2) for deterministic element selection
+- **Minimal context**: Concise output, no large DOM dumps
+- **Zero config**: Single CLI install, headless by default
+- **Sessions**: `--session name` for parallel isolated browsers
 
 ## Test Design Patterns
 

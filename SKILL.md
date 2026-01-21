@@ -79,6 +79,7 @@ This package integrates with and references:
 | Resource | Type | Purpose |
 |----------|------|---------|
 | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | APM Skill | Browser automation for E2E testing |
+| [agent-browser SKILL.md](https://github.com/vercel-labs/agent-browser/blob/main/skills/agent-browser/SKILL.md) | Skill Reference | Full command reference for agent-browser |
 | [vercel-labs/agent-skills#web-design-guidelines](https://github.com/vercel-labs/agent-skills) | APM Skill | 100+ UI/UX/accessibility audit rules |
 | [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md) | External | Source for web-design-guidelines rules |
 | [Agent Skills Spec](https://agentskills.io/) | Specification | SKILL.md format documentation |
