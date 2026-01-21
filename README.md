@@ -71,6 +71,137 @@ apm compile --target claude-code --target opencode --target codex
 
 > **Tip**: Run `apm compile` without flags to auto-detect installed AI tools and compile for all of them.
 
+## Installing Individual Components
+
+You can install the full package or pick individual agents, prompts, and instructions.
+
+### Install the Full Package
+
+```bash
+# Installs all instructions, prompts, agents, and dependencies
+apm install chandima/agent-skills
+```
+
+### Install Individual Files (Virtual Packages)
+
+APM supports installing single files directly from any repository:
+
+```bash
+# Install just the code-review prompt
+apm install chandima/agent-skills/.apm/prompts/code-review.prompt.md
+
+# Install just the architect agent
+apm install chandima/agent-skills/.apm/agents/architect.agent.md
+
+# Install just the TypeScript standards
+apm install chandima/agent-skills/.apm/instructions/typescript.instructions.md
+```
+
+### Available Components
+
+**Prompts** (install individually with `/.apm/prompts/<name>.prompt.md`):
+| File | Command |
+|------|---------|
+| `code-review.prompt.md` | `/code-review` |
+| `pr-description.prompt.md` | `/pr-description` |
+| `debug-issue.prompt.md` | `/debug-issue` |
+| `refactor.prompt.md` | `/refactor` |
+| `test-plan.prompt.md` | `/test-plan` |
+
+**Agents** (install individually with `/.apm/agents/<name>.agent.md`):
+| File | Persona |
+|------|---------|
+| `code-reviewer.agent.md` | `@code-reviewer` |
+| `architect.agent.md` | `@architect` |
+| `test-engineer.agent.md` | `@test-engineer` |
+
+**Instructions** (install individually with `/.apm/instructions/<name>.instructions.md`):
+| File | Applies To |
+|------|------------|
+| `typescript.instructions.md` | `**/*.{ts,tsx}` |
+| `astro.instructions.md` | `**/*.astro` |
+| `json-schema.instructions.md` | `**/*.schema.json` |
+| `git.instructions.md` | All files |
+| `security.instructions.md` | All code files |
+
+### Add as a Dependency in Your Package
+
+If you're building your own APM package, add this package (or individual components) to your `apm.yml`:
+
+```yaml
+# apm.yml
+name: my-project
+dependencies:
+  apm:
+    # Full package
+    - chandima/agent-skills
+    
+    # Or individual components
+    - chandima/agent-skills/.apm/prompts/code-review.prompt.md
+    - chandima/agent-skills/.apm/agents/architect.agent.md
+```
+
+Then run:
+```bash
+apm install  # Installs all dependencies from apm.yml
+apm compile  # Generates context files for your AI tools
+```
+
+### Create Custom Skills
+
+To create your own instructions, prompts, or agents:
+
+```bash
+# Initialize a new APM package
+apm init my-skills && cd my-skills
+```
+
+This creates the standard structure:
+```
+my-skills/
+├── apm.yml                          # Package manifest
+├── SKILL.md                         # Package meta-guide
+└── .apm/
+    ├── instructions/                # Add .instructions.md files here
+    ├── prompts/                     # Add .prompt.md files here
+    └── agents/                      # Add .agent.md files here
+```
+
+**Example: Add a custom instruction**
+```bash
+cat > .apm/instructions/react.instructions.md << 'EOF'
+---
+applyTo: "**/*.{jsx,tsx}"
+---
+# React Standards
+- Use functional components with hooks
+- Prefer named exports over default exports
+- Co-locate tests with components
+EOF
+```
+
+**Example: Add a custom prompt**
+```bash
+cat > .apm/prompts/generate-tests.prompt.md << 'EOF'
+---
+description: "Generate unit tests for the selected code"
+---
+# Test Generator
+
+Analyze the provided code and generate comprehensive unit tests.
+
+## Output
+- Use the project's existing test framework
+- Include edge cases and error scenarios
+- Follow AAA pattern (Arrange, Act, Assert)
+EOF
+```
+
+Push to GitHub and anyone can install:
+```bash
+apm install your-username/my-skills
+```
+
 ## What's Included
 
 ### Instructions (Coding Standards)
