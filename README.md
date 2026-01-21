@@ -28,6 +28,49 @@ apm install chandima/agent-skills
 apm compile
 ```
 
+### Compile for Specific AI Tools
+
+APM compiles skills into the format each AI tool expects. Use the `--target` flag to compile for specific tools:
+
+**Claude Code**
+```bash
+apm compile --target claude-code
+# Output: CLAUDE.md in your project root
+```
+
+**OpenAI Codex / ChatGPT**
+```bash
+apm compile --target codex
+# Output: .codex/instructions.md
+```
+
+**OpenCode**
+```bash
+apm compile --target opencode
+# Output: .opencode/instructions.md
+```
+
+**All supported targets**
+```bash
+# Compile for all detected AI tools at once
+apm compile
+
+# Or specify multiple targets
+apm compile --target claude-code --target opencode --target codex
+```
+
+**Available compile targets:**
+| Target | Output Location | AI Tool |
+|--------|-----------------|---------|
+| `claude-code` | `CLAUDE.md` | Claude Code (Anthropic) |
+| `codex` | `.codex/instructions.md` | OpenAI Codex / ChatGPT |
+| `opencode` | `.opencode/instructions.md` | OpenCode CLI |
+| `cursor` | `.cursor/rules/` | Cursor IDE |
+| `windsurf` | `.windsurf/rules/` | Windsurf IDE |
+| `cline` | `.clinerules/` | Cline Extension |
+
+> **Tip**: Run `apm compile` without flags to auto-detect installed AI tools and compile for all of them.
+
 ## What's Included
 
 ### Instructions (Coding Standards)
