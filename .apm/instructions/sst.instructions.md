@@ -68,8 +68,11 @@ SST + Astro projects should use `concurrently` to run both processes in parallel
 {
   "scripts": {
     "dev": "concurrently \"sst dev\" \"astro dev\"",
+    "remove": "sst remove --stage dev",
     "build": "astro build",
-    "remove": "sst remove --stage dev"
+    "preview": "astro preview",
+    "astro": "astro",
+    "sst": "sst"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
