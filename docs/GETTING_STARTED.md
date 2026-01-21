@@ -149,6 +149,10 @@ Start OpenCode:
 opencode
 ```
 
+> **Note**: The conversations below show example interactions with the agent. 
+> Use these as a guide—adapt the prompts to your needs. The agent will create 
+> the actual files in your project.
+
 ### Scaffold the Project
 
 ```
