@@ -345,6 +345,23 @@ Install dependencies and start the SST dev environment. You can run terminal com
 You: !npm install
 ```
 
+The generated `package.json` uses `concurrently` to run SST and Astro dev in parallel:
+
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"sst dev\" \"astro dev\"",
+    "build": "astro build",
+    "remove": "sst remove --stage dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
+```
+
+Now start the dev environment:
+
 ```
 You: !npm run dev
 ```
@@ -354,20 +371,18 @@ You: !npm run dev
 > !AWS_PROFILE=your-profile npm run dev
 > ```
 
-This starts SST's multiplexer which deploys your infrastructure and runs the Astro dev server locally. You'll see a tabbed interface with:
-- **Deploy** - SST infrastructure deployment  
-- **Web** - Your Astro dev server
+This runs SST (deploying infrastructure) and Astro dev server concurrently. You'll see interleaved output from both processes:
 
 ```
-SST 3.x
-
-➜ App:     todo-app
-  Stage:   dev
-
-✓ Complete
+[0] SST 3.x
+[0] ➜ App:     todo-app
+[0]   Stage:   dev
+[0] ✓ Complete
+[1] 🚀 astro v5.0.0 started
+[1]   Local: http://localhost:4321/
 ```
 
-Click on the **Web** tab to see the Astro dev server output. Once it shows `Local: http://localhost:4321/`, open that URL in your browser.
+Open `http://localhost:4321/` in your browser.
 
 ---
 

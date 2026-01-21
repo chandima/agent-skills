@@ -32,9 +32,6 @@ export default $config({
     const bucket = new sst.aws.Bucket("Uploads");
     new sst.aws.Astro("Web", {
       link: [bucket],
-      dev: {
-        command: "astro dev",
-      },
     });
   },
 });
@@ -60,10 +57,24 @@ export const bucket = new sst.aws.Bucket("Uploads");
 import { bucket } from "./storage";
 new sst.aws.Astro("Web", {
   link: [bucket],
-  dev: {
-    command: "astro dev",
-  },
 });
+```
+
+## Local Development
+
+Use `concurrently` to run SST and Astro dev in parallel:
+
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"sst dev\" \"astro dev\"",
+    "build": "astro build",
+    "remove": "sst remove --stage dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
 ```
 
 ## Component Selection
@@ -90,9 +101,6 @@ const database = new sst.aws.Postgres("Database", { vpc });
 // Link to Astro
 new sst.aws.Astro("Web", {
   link: [bucket, database],
-  dev: {
-    command: "astro dev",
-  },
 });
 ```
 

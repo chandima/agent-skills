@@ -24,9 +24,6 @@ export default $config({
     const bucket = new sst.aws.Bucket("Uploads");
     new sst.aws.Astro("Web", {
       link: [bucket],
-      dev: {
-        command: "astro dev",
-      },
     });
   },
 });
@@ -59,32 +56,40 @@ export const bucket = new sst.aws.Bucket("Uploads");
 import { bucket } from "./storage";
 new sst.aws.Astro("Web", {
   link: [bucket],
-  dev: {
-    command: "astro dev",
-  },
 });
 ```
+
+## Local Development with Concurrently
+
+SST + Astro projects should use `concurrently` to run both processes in parallel:
+
+```json
+// package.json
+{
+  "scripts": {
+    "dev": "concurrently \"sst dev\" \"astro dev\"",
+    "build": "astro build",
+    "remove": "sst remove --stage dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
+```
+
+This runs SST (for infrastructure/live Lambda dev) and Astro dev server simultaneously.
 
 ## Core Components
 
 ### Astro Sites
 
-Always configure `dev.command` to prevent recursion when `package.json` has `"dev": "sst dev"`:
-
 ```typescript
 // Basic Astro deployment
-new sst.aws.Astro("Web", {
-  dev: {
-    command: "astro dev",
-  },
-});
+new sst.aws.Astro("Web");
 
 // With custom domain
 new sst.aws.Astro("Web", {
   domain: "myapp.com",
-  dev: {
-    command: "astro dev",
-  },
 });
 
 // With subdomain and path
@@ -92,9 +97,6 @@ new sst.aws.Astro("Web", {
   domain: {
     name: "app.myapp.com",
     redirects: ["www.myapp.com"],
-  },
-  dev: {
-    command: "astro dev",
   },
 });
 
@@ -104,23 +106,14 @@ new sst.aws.Astro("Web", {
   environment: {
     PUBLIC_API_URL: api.url,
   },
-  dev: {
-    command: "astro dev",
-  },
 });
 
 // With custom build (monorepo)
 new sst.aws.Astro("Web", {
   path: "packages/web",
   buildCommand: "pnpm build",
-  dev: {
-    command: "pnpm dev",
-    directory: "packages/web",
-  },
 });
 ```
-
-**Why `dev.command` is required:** SST's multiplexer runs `npm run dev` by default. If your root `package.json` has `"dev": "sst dev"`, this creates infinite recursion. Setting `dev.command: "astro dev"` runs Astro directly.
 
 ### Functions
 
@@ -361,9 +354,6 @@ realtime.subscribe("packages/functions/src/realtime/message.handler", {
 // Link to web app
 new sst.aws.Astro("Web", {
   link: [realtime],
-  dev: {
-    command: "astro dev",
-  },
 });
 ```
 
@@ -415,9 +405,6 @@ const queue = new sst.aws.Queue("JobQueue");
 // Link to web app
 new sst.aws.Astro("Web", {
   link: [bucket, database, queue],
-  dev: {
-    command: "astro dev",
-  },
 });
 
 // Link to function
@@ -649,9 +636,6 @@ const bucket = new sst.aws.Bucket("Uploads");
 
 new sst.aws.Astro("Web", {
   link: [bucket],
-  dev: {
-    command: "astro dev",
-  },
 });
 ```
 
