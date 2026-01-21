@@ -67,7 +67,7 @@ SST + Astro projects should use `concurrently` to run both processes in parallel
 // package.json
 {
   "scripts": {
-    "dev": "concurrently \"sst dev\" \"astro dev\"",
+    "dev": "concurrently \"sst dev\" \"&& npm run dev\"",
     "remove": "sst remove --stage dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -252,13 +252,15 @@ import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
 const client = new SQSClient({});
 
-await client.send(new SendMessageCommand({
-  QueueUrl: Resource.EmailQueue.url,
-  MessageBody: JSON.stringify({
-    to: "user@example.com",
-    template: "welcome",
+await client.send(
+  new SendMessageCommand({
+    QueueUrl: Resource.EmailQueue.url,
+    MessageBody: JSON.stringify({
+      to: "user@example.com",
+      template: "welcome",
+    }),
   }),
-}));
+);
 ```
 
 ### Event Bus
@@ -287,18 +289,25 @@ bus.subscribe("packages/functions/src/events/order.shipped.handler", {
 
 ```typescript
 import { Resource } from "sst";
-import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
+import {
+  EventBridgeClient,
+  PutEventsCommand,
+} from "@aws-sdk/client-eventbridge";
 
 const client = new EventBridgeClient({});
 
-await client.send(new PutEventsCommand({
-  Entries: [{
-    EventBusName: Resource.EventBus.name,
-    Source: "myapp.orders",
-    DetailType: "order.created",
-    Detail: JSON.stringify({ orderId: "123", userId: "456" }),
-  }],
-}));
+await client.send(
+  new PutEventsCommand({
+    Entries: [
+      {
+        EventBusName: Resource.EventBus.name,
+        Source: "myapp.orders",
+        DetailType: "order.created",
+        Detail: JSON.stringify({ orderId: "123", userId: "456" }),
+      },
+    ],
+  }),
+);
 ```
 
 ### Cron Jobs
@@ -366,10 +375,10 @@ new sst.aws.Astro("Web", {
 // packages/functions/src/realtime/auth.ts
 export async function handler(event) {
   const token = event.queryStringParameters?.token;
-  
+
   // Validate token
   const user = await verifyToken(token);
-  
+
   return {
     isAuthorized: !!user,
     context: {
@@ -383,16 +392,21 @@ export async function handler(event) {
 
 ```typescript
 import { Resource } from "sst";
-import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
+import {
+  ApiGatewayManagementApiClient,
+  PostToConnectionCommand,
+} from "@aws-sdk/client-apigatewaymanagementapi";
 
 const client = new ApiGatewayManagementApiClient({
   endpoint: Resource.Updates.endpoint,
 });
 
-await client.send(new PostToConnectionCommand({
-  ConnectionId: connectionId,
-  Data: JSON.stringify({ type: "notification", message: "Hello!" }),
-}));
+await client.send(
+  new PostToConnectionCommand({
+    ConnectionId: connectionId,
+    Data: JSON.stringify({ type: "notification", message: "Hello!" }),
+  }),
+);
 ```
 
 ## Resource Linking
@@ -424,10 +438,10 @@ new sst.aws.Function("Processor", {
 import { Resource } from "sst";
 
 // Type-safe access to resource properties
-console.log(Resource.Uploads.name);        // Bucket name
-console.log(Resource.Database.host);       // RDS host
-console.log(Resource.Database.database);   // Database name
-console.log(Resource.JobQueue.url);        // SQS URL
+console.log(Resource.Uploads.name); // Bucket name
+console.log(Resource.Database.host); // RDS host
+console.log(Resource.Database.database); // Database name
+console.log(Resource.JobQueue.url); // SQS URL
 ```
 
 ## Pulumi AWS Integration
@@ -514,7 +528,7 @@ export default $config({
   },
   async run() {
     const isProd = $app.stage === "production";
-    
+
     // Different config per stage
     const database = new sst.aws.Postgres("Database", {
       vpc,
@@ -523,7 +537,7 @@ export default $config({
         max: isProd ? "16 ACU" : "2 ACU",
       },
     });
-    
+
     // Conditional resources
     if (isProd) {
       new sst.aws.Cron("Backup", {
@@ -651,15 +665,17 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 export const POST: APIRoute = async ({ request }) => {
   const formData = await request.formData();
   const file = formData.get("file") as File;
-  
+
   const client = new S3Client({});
-  await client.send(new PutObjectCommand({
-    Bucket: Resource.Uploads.name,
-    Key: file.name,
-    Body: Buffer.from(await file.arrayBuffer()),
-    ContentType: file.type,
-  }));
-  
+  await client.send(
+    new PutObjectCommand({
+      Bucket: Resource.Uploads.name,
+      Key: file.name,
+      Body: Buffer.from(await file.arrayBuffer()),
+      ContentType: file.type,
+    }),
+  );
+
   return new Response(JSON.stringify({ success: true }), {
     status: 200,
     headers: { "Content-Type": "application/json" },

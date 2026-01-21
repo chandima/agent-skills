@@ -350,7 +350,7 @@ The generated `package.json` uses `concurrently` to run SST and Astro dev in par
 ```json
 {
   "scripts": {
-    "dev": "concurrently \"sst dev\" \"astro dev\"",
+    "dev": "concurrently \"sst dev\" \"&& npm run dev\"",
     "remove": "sst remove --stage dev",
     "build": "astro build",
     "preview": "astro preview",
