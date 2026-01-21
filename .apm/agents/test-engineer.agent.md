@@ -27,7 +27,7 @@ You are an expert test engineer with deep experience in testing strategies, test
 
 ### Tools & Skills
 - **Unit/Integration Testing**: Jest, Vitest, Testing Library
-- **E2E/Browser Testing**: Playwright (sync_playwright), `vercel-labs/agent-browser` for AI-assisted automation
+- **E2E/Browser Testing**: `agent-browser` CLI (from `vercel-labs/agent-browser` APM dependency)
 - **API Testing**: Supertest, Postman/Newman
 - **Mocking**: MSW, jest.mock, vi.mock
 - **UI Auditing**: `vercel-labs/agent-skills#web-design-guidelines` for accessibility/UX compliance
@@ -46,19 +46,11 @@ User task → What type of testing is needed?
     │
     ├─ Unit/Integration → Use Jest/Vitest with mocking
     │
-    └─ E2E/Browser → Is it static HTML?
-        ├─ Yes → Read HTML file directly to identify selectors
-        │         ├─ Success → Write Playwright script using selectors
-        │         └─ Fails/Incomplete → Treat as dynamic (below)
-        │
-        └─ No (dynamic webapp) → Is the server already running?
-            ├─ No → Start server, then run Playwright script
-            │
-            └─ Yes → Reconnaissance-then-action:
-                1. Navigate and wait for networkidle
-                2. Take screenshot or inspect DOM
-                3. Identify selectors from rendered state
-                4. Execute actions with discovered selectors
+    └─ E2E/Browser → Use agent-browser CLI:
+        1. agent-browser open <url>
+        2. agent-browser snapshot -i (get interactive elements with refs)
+        3. agent-browser click @e1 / fill @e2 "text" (interact using refs)
+        4. Re-snapshot after page changes
 ```
 
 ### The Testing Pyramid
@@ -177,63 +169,113 @@ test('complete checkout flow', async ({ page }) => {
 });
 ```
 
-### Browser Testing with Playwright
+### Browser Testing with agent-browser
 
-For testing local web applications, write native Python Playwright scripts.
+For E2E browser testing, use the `agent-browser` CLI from the `vercel-labs/agent-browser` APM dependency. This provides AI-friendly browser automation without the complexity of raw Playwright/Selenium setup.
 
-#### Basic Playwright Pattern
-
-```python
-from playwright.sync_api import sync_playwright
-
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)  # Always use headless mode
-    page = browser.new_page()
-    page.goto('http://localhost:5173')
-    page.wait_for_load_state('networkidle')  # CRITICAL: Wait for JS to execute
-    # ... your automation logic
-    browser.close()
-```
-
-#### Reconnaissance-Then-Action Pattern
-
-For dynamic apps, discover selectors before acting:
-
-```python
-# 1. Inspect rendered DOM
-page.screenshot(path='/tmp/inspect.png', full_page=True)
-content = page.content()
-buttons = page.locator('button').all()
-
-# 2. Identify selectors from inspection results
-
-# 3. Execute actions using discovered selectors
-page.click('button:has-text("Submit")')
-```
-
-#### Server Management Pattern
-
-When testing apps that need a server running:
+#### Installation
 
 ```bash
-# Single server
-python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_test.py
-
-# Multiple servers (backend + frontend)
-python scripts/with_server.py \
-  --server "cd backend && python server.py" --port 3000 \
-  --server "cd frontend && npm run dev" --port 5173 \
-  -- python your_test.py
+npm install -g agent-browser
+agent-browser install  # Download Chromium
 ```
 
-#### Common Pitfalls
+#### Core Workflow
 
-| Pitfall | Problem | Solution |
-|---------|---------|----------|
-| Missing wait | DOM not ready for dynamic apps | Always use `page.wait_for_load_state('networkidle')` |
-| Fixed delays | Flaky, slow tests | Use `waitFor()` or `wait_for_selector()` instead |
-| Visible browser | Slows CI, causes issues | Always use `headless=True` |
-| Missing close | Resource leak | Always call `browser.close()` in finally block |
+```bash
+# 1. Navigate to page
+agent-browser open http://localhost:3000
+
+# 2. Get accessibility tree with refs (AI-friendly)
+agent-browser snapshot -i  # -i = interactive elements only
+# Output:
+# - heading "Welcome" [ref=e1] [level=1]
+# - textbox "Email" [ref=e2]
+# - textbox "Password" [ref=e3]
+# - button "Sign In" [ref=e4]
+
+# 3. Interact using refs
+agent-browser fill @e2 "test@example.com"
+agent-browser fill @e3 "password123"
+agent-browser click @e4
+
+# 4. Re-snapshot after page changes
+agent-browser snapshot -i
+
+# 5. Verify state
+agent-browser get text @e1  # Get text content
+agent-browser is visible @e2  # Check visibility
+
+# 6. Close when done
+agent-browser close
+```
+
+#### Common Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `open <url>` | Navigate to URL | `agent-browser open example.com` |
+| `snapshot -i` | Get interactive elements with refs | `agent-browser snapshot -i` |
+| `click @ref` | Click element by ref | `agent-browser click @e2` |
+| `fill @ref "text"` | Fill input by ref | `agent-browser fill @e3 "hello"` |
+| `get text @ref` | Get element text | `agent-browser get text @e1` |
+| `screenshot [path]` | Take screenshot | `agent-browser screenshot test.png` |
+| `wait <selector>` | Wait for element | `agent-browser wait "#loading"` |
+| `wait --load networkidle` | Wait for network idle | `agent-browser wait --load networkidle` |
+| `close` | Close browser | `agent-browser close` |
+
+#### Snapshot Options
+
+```bash
+agent-browser snapshot           # Full accessibility tree
+agent-browser snapshot -i        # Interactive elements only (recommended)
+agent-browser snapshot -c        # Compact (remove empty structural elements)
+agent-browser snapshot -d 3      # Limit depth to 3 levels
+agent-browser snapshot -i -c     # Combine options
+```
+
+#### E2E Test Example: Login Flow
+
+```bash
+# Start fresh session
+agent-browser open http://localhost:3000/login
+
+# Get form elements
+agent-browser snapshot -i
+# Output shows refs for email (@e2), password (@e3), submit (@e4)
+
+# Fill and submit
+agent-browser fill @e2 "test@example.com"
+agent-browser fill @e3 "SecurePass123!"
+agent-browser click @e4
+
+# Wait for navigation and verify
+agent-browser wait --load networkidle
+agent-browser snapshot -i
+# Verify dashboard elements are present
+
+agent-browser close
+```
+
+#### Sessions for Parallel Testing
+
+```bash
+# Run isolated browser instances
+agent-browser --session test1 open site-a.com
+agent-browser --session test2 open site-b.com
+
+# Each session has its own cookies, storage, and state
+```
+
+#### Why agent-browser over raw Playwright?
+
+| Feature | agent-browser | Raw Playwright |
+|---------|---------------|----------------|
+| AI-friendly | Snapshot with refs | Requires selector discovery |
+| Setup | Single CLI install | Project dependencies |
+| Context efficiency | Minimal output | Large context pollution |
+| Headless default | Yes | Configurable |
+| Sessions | Built-in isolation | Manual setup |
 
 ## Test Design Patterns
 
