@@ -21,7 +21,8 @@ This tutorial walks through installing agent-skills in a new project, compiling 
 
 - **AWS Credentials** - For SST deployment
   ```bash
-  aws configure  # or use SSO
+  aws sso login --profile <your-profile>  # Recommended: use SSO
+  # or: aws configure
   ```
 
 ---
@@ -50,15 +51,19 @@ apm install chandima/agent-skills
 Validating 1 package(s)...
 ✓ chandima/agent-skills - accessible
 Added chandima/agent-skills to apm.yml
+Updated apm.yml with 1 new package(s)
 Installing dependencies from apm.yml...
 Installing APM dependencies (1)...
-Created .github/ as standard skills root
+Created .github/ as standard skills root (.github/skills/) and to enable 
+VSCode/Copilot integration
 ✓ chandima/agent-skills
   └─ 5 prompts integrated → .github/prompts/
   └─ 5 agents integrated → .github/agents/
   └─ Skill integrated → .github/skills/
 
 Added apm_modules/ to .gitignore
+Updated .gitignore for integrated prompts (*-apm.prompt.md)
+Updated .gitignore for integrated agents (*-apm.agent.md, *-apm.chatmode.md)
 ✓ Generated 1 Skill(s)
 Installed 1 APM dependencies
 
@@ -87,14 +92,18 @@ apm compile
 Compiling for AGENTS.md (VSCode/Copilot) - detected .github/ folder
 Analyzing project structure...
 ├─ 3 directories scanned (max depth: 4)
-├─ 6 files analyzed across 2 file types
+├─ 7 files analyzed across 2 file types (md, yml)
 └─ 11 instruction patterns detected
 
 Optimizing placements...
 
 Generated 2 AGENTS.md files
-├─ ./AGENTS.md              10 instructions
-└─ .github/AGENTS.md         1 instruction
+┌─ Context efficiency:    10.0%
+└─ Generation time:       24ms
+
+Placement Distribution
+├─ .                              10 instructions from 1 source
+└─ .github                        1 instruction from 1 source
 
 ✅ Compilation completed successfully!
 ```
