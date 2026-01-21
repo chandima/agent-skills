@@ -6,3 +6,6 @@ dependencies:
   apm:
     - vercel-labs/agent-browser # Browser automation skill
     - vercel-labs/agent-skills#web-design-guidelines # 100+ UI/UX/a11y audit rules
+
+# Optional dependencies - install separately if needed
+# apm install czlonkowski/n8n-skills  # 7 skills for n8n workflow automation (requires n8n-mcp)

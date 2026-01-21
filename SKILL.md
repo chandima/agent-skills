@@ -81,6 +81,8 @@ This package integrates with and references:
 | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | APM Skill | Browser automation for E2E testing |
 | [agent-browser SKILL.md](https://github.com/vercel-labs/agent-browser/blob/main/skills/agent-browser/SKILL.md) | Skill Reference | Full command reference for agent-browser |
 | [vercel-labs/agent-skills#web-design-guidelines](https://github.com/vercel-labs/agent-skills) | APM Skill | 100+ UI/UX/accessibility audit rules |
+| [czlonkowski/n8n-skills](https://github.com/czlonkowski/n8n-skills) | Optional Skill | 7 skills for n8n workflow automation |
+| [czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp) | MCP Server | n8n node docs, validation, workflow management |
 | [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md) | External | Source for web-design-guidelines rules |
 | [Agent Skills Spec](https://agentskills.io/) | Specification | SKILL.md format documentation |
 
@@ -114,8 +116,54 @@ This package works best when combined with MCP servers for enhanced context. The
 | Agent | Recommended MCP | Benefit |
 |-------|-----------------|---------|
 | `@code-reviewer` | GitHub MCP | Repository context, PR details |
-| `@architect` | AWS MCP, Context7 | Infrastructure patterns, library docs |
+| `@architect` | AWS MCP, Context7, n8n-mcp | Infrastructure patterns, library docs, workflow automation |
 | `@test-engineer` | (uses agent-browser) | Browser automation for E2E testing |
+
+### n8n Workflow Automation
+
+For building n8n workflows programmatically, use **n8n-mcp** with **n8n-skills**:
+
+```bash
+# Install n8n-mcp MCP server
+npx n8n-mcp
+
+# Install n8n skills (optional, for Claude Code)
+apm install czlonkowski/n8n-skills
+```
+
+**n8n-mcp** provides:
+- 1,084 n8n nodes (537 core + 547 community)
+- Node property schemas and validation
+- 2,709 workflow templates
+- Workflow create/update/execute via n8n API
+
+**n8n-skills** provides 7 complementary skills:
+| Skill | Purpose |
+|-------|---------|
+| n8n Expression Syntax | Correct `{{}}` patterns, `$json`/`$node` variables |
+| n8n MCP Tools Expert | Effective use of n8n-mcp tools |
+| n8n Workflow Patterns | 5 proven architectural patterns |
+| n8n Validation Expert | Error interpretation and fixing |
+| n8n Node Configuration | Operation-aware node setup |
+| n8n Code JavaScript | Code node patterns and gotchas |
+| n8n Code Python | Python limitations and workarounds |
+
+**Configuration** (Claude Desktop):
+```json
+{
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "N8N_API_URL": "https://your-n8n-instance.com",
+        "N8N_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
 
 ### For GitHub Enterprise Cloud (ghe.com)
 
