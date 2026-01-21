@@ -379,7 +379,7 @@ Install dependencies and start the SST dev environment:
 
 ```bash
 npm install
-npx sst dev
+npx sst dev --non-interactive
 ```
 
 ```
@@ -439,4 +439,4 @@ apm compile
 | Compile | `apm compile` | AGENTS.md generated |
 | Build | `opencode` → `@fullstack-developer` | SST + Astro app |
 | Review | `/code-review` | Code analyzed |
-| Run | `npx sst dev` | App running |
+| Run | `npx sst dev --non-interactive` | App running |
