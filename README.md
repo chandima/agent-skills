@@ -56,21 +56,26 @@ apm compile
 
 APM compiles skills into the format each AI tool expects:
 
-| Target | Output Location | AI Tool |
-|--------|-----------------|---------|
-| `claude-code` | `CLAUDE.md` | Claude Code (Anthropic) |
-| `codex` | `.codex/instructions.md` | OpenAI Codex / ChatGPT |
-| `opencode` | `.opencode/instructions.md` | OpenCode CLI |
-| `cursor` | `.cursor/rules/` | Cursor IDE |
-| `windsurf` | `.windsurf/rules/` | Windsurf IDE |
-| `cline` | `.clinerules/` | Cline Extension |
+| Target | Output Files | Best For |
+|--------|--------------|----------|
+| `vscode` | `AGENTS.md`, `.github/prompts/`, `.github/agents/`, `.github/skills/` | GitHub Copilot, Cursor, Codex, Gemini |
+| `claude` | `CLAUDE.md`, `.claude/commands/`, `SKILL.md` | Claude Code, Claude Desktop |
+| `all` | All of the above | Universal compatibility |
+
+**Auto-detection behavior:**
+- `.github/` exists only → compiles for `vscode` target
+- `.claude/` exists only → compiles for `claude` target
+- Both folders exist → compiles for `all` targets
+- Neither exists → `minimal` mode (AGENTS.md only)
 
 ```bash
-# Auto-detect and compile for all installed AI tools
+# Auto-detect and compile (recommended)
 apm compile
 
-# Or specify targets
-apm compile --target claude-code --target opencode
+# Or specify targets explicitly
+apm compile --target vscode
+apm compile --target claude
+apm compile --target all
 ```
 
 ## What's Included
