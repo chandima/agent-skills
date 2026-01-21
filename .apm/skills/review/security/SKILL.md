@@ -1,185 +1,219 @@
 ---
 name: security
-description: Security review patterns covering secrets, input validation, authentication, authorization, and common vulnerabilities. Use when reviewing code for security issues or implementing secure features.
+description: Security vulnerability detection methodology. Use when reviewing code to find security issues - focuses on HOW TO FIND vulnerabilities, not how to write secure code.
 ---
 
-# Security Review
+# Security Review Methodology
 
-Security-focused code review patterns to identify and prevent common vulnerabilities.
+This skill teaches you HOW TO FIND security vulnerabilities during code review. For HOW TO WRITE secure code, see `.apm/instructions/security.instructions.md`.
 
-## Security Checklist
+## Detection Approach
 
-### Secrets Management
-- [ ] No hardcoded secrets or credentials
-- [ ] No secrets in comments or documentation
-- [ ] No secrets in error messages or logs
-- [ ] Environment variables used for configuration
-- [ ] `.env` files excluded from version control
+### 1. Secrets Detection
 
-### Input Validation
-- [ ] All user input validated server-side
-- [ ] SQL queries are parameterized
-- [ ] Output is properly escaped (XSS prevention)
-- [ ] File uploads validated and sanitized
-- [ ] Allowlists preferred over denylists
+**What to look for:**
+- Hardcoded strings that look like API keys, tokens, passwords
+- Configuration values that should be environment variables
+- Comments containing credentials ("password is xyz")
 
-### Authentication
-- [ ] Passwords hashed with bcrypt/Argon2/scrypt
-- [ ] Rate limiting on login attempts
-- [ ] Secure session management (httpOnly, secure cookies)
-- [ ] Session invalidation on logout
-- [ ] JWT secrets are strong and from environment
-
-### Authorization
-- [ ] Authorization checked on every request
-- [ ] No client-side only authorization
-- [ ] Resource ownership verified (IDOR prevention)
-- [ ] Principle of least privilege applied
-
-### Error Handling
-- [ ] Generic error messages for users
-- [ ] Detailed errors logged server-side only
-- [ ] No stack traces in production responses
-
-## Common Vulnerabilities
-
-### SQL Injection
-
-```typescript
-// NEVER do this
-const query = `SELECT * FROM users WHERE email = '${email}'`;
-
-// Use parameterized queries
-const user = await db.query(
-  'SELECT * FROM users WHERE email = $1',
-  [email]
-);
-
-// Or use an ORM
-const user = await prisma.user.findUnique({
-  where: { email },
-});
-```
-
-### XSS Prevention
-
-```typescript
-// React automatically escapes - safe
-function UserName({ name }: { name: string }) {
-  return <span>{name}</span>;
-}
-
-// Dangerous - avoid unless absolutely necessary
-function RawHtml({ html }: { html: string }) {
-  return <div dangerouslySetInnerHTML={{ __html: html }} />; // XSS risk!
-}
-```
-
-### Password Handling
-
-```typescript
-import bcrypt from 'bcrypt';
-
-const SALT_ROUNDS = 12;
-
-async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, SALT_ROUNDS);
-}
-
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
-}
-```
-
-### Session Configuration
-
-```typescript
-const sessionConfig = {
-  secret: process.env.SESSION_SECRET,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' as const,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  },
-};
-```
-
-### Environment Validation
-
-```typescript
-function validateEnv() {
-  const required = ['DATABASE_URL', 'API_KEY', 'JWT_SECRET'];
-  const missing = required.filter((key) => !process.env[key]);
-  
-  if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-  }
-}
-```
-
-### Authorization Check
-
-```typescript
-async function getDocument(userId: string, documentId: string) {
-  const document = await db.document.findUnique({
-    where: { id: documentId },
-  });
-  
-  if (!document) {
-    throw new NotFoundError('Document not found');
-  }
-  
-  // Always verify ownership/access
-  if (document.ownerId !== userId && !document.sharedWith.includes(userId)) {
-    throw new ForbiddenError('Access denied');
-  }
-  
-  return document;
-}
-```
-
-### Safe Logging
-
-```typescript
-// Safe logging
-logger.info('User login', {
-  userId: user.id,
-  success: true,
-  ip: request.ip,
-});
-
-// NEVER log these
-// password, creditCard, sessionToken, apiKey
-```
-
-## HTTP Security Headers
-
-```typescript
-const securityHeaders = {
-  'Content-Security-Policy': "default-src 'self'",
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-};
-```
-
-## Dependency Security
-
+**Search patterns:**
 ```bash
-# Check for vulnerabilities
-npm audit
-
-# Fix automatically where possible
-npm audit fix
-
-# Update to latest security patches
-npm update
+# Find potential hardcoded secrets
+grep -rE "(api[_-]?key|password|secret|token|credential)\s*[:=]" --include="*.{ts,js,py,java,go}"
+grep -rE "sk-[a-zA-Z0-9]{20,}" --include="*.{ts,js,py}"  # OpenAI-style keys
+grep -rE "ghp_[a-zA-Z0-9]{36}" --include="*.{ts,js,py}"  # GitHub PATs
+grep -rE "AKIA[0-9A-Z]{16}" --include="*.{ts,js,py}"     # AWS access keys
 ```
 
-Review packages before adding:
-- Check maintenance status
-- Review download counts
-- Audit permissions requested
+**Red flags:**
+- Strings longer than 20 characters in configuration
+- Base64-encoded values in source code
+- `.env` files committed to repo
+- Secrets in error messages or logs
+
+---
+
+### 2. SQL Injection Detection
+
+**What to look for:**
+- String concatenation or template literals in database queries
+- Dynamic column/table names from user input
+- Raw query methods without parameterization
+
+**Search patterns:**
+```bash
+# Find string concatenation in queries
+grep -rE "SELECT.*\+" --include="*.{ts,js,py,java}"
+grep -rE "SELECT.*\\\$\{" --include="*.{ts,js}"          # Template literals
+grep -rE "query\s*\(\s*[\"'].*\+" --include="*.{ts,js}"  # query('...' + 
+grep -rE "execute\s*\(\s*f[\"']" --include="*.py"        # Python f-strings
+```
+
+**Red flags:**
+- `query("SELECT * FROM " + table)`
+- `` query(`SELECT * FROM ${table}`) ``
+- `ORDER BY` with dynamic column names
+- `WHERE IN (${ids.join(',')})` without sanitization
+
+---
+
+### 3. XSS Detection
+
+**What to look for:**
+- User input rendered as HTML without escaping
+- Direct DOM manipulation with user data
+- Framework escape hatches being used
+
+**Search patterns:**
+```bash
+# Find dangerous patterns
+grep -rE "dangerouslySetInnerHTML" --include="*.{tsx,jsx}"
+grep -rE "v-html" --include="*.vue"
+grep -rE "innerHTML\s*=" --include="*.{ts,js}"
+grep -rE "\[innerHTML\]" --include="*.{html,ts}"          # Angular
+grep -rE "\|.*safe" --include="*.html"                    # Django/Jinja safe filter
+```
+
+**Red flags:**
+- `dangerouslySetInnerHTML` with user-provided content
+- `element.innerHTML = userInput`
+- Marked/rendered markdown from untrusted sources
+- HTML email templates with user data
+
+---
+
+### 4. Authentication Issues
+
+**What to look for:**
+- Missing authentication on endpoints
+- Weak password handling
+- Session management issues
+
+**Search patterns:**
+```bash
+# Find auth-related code
+grep -rE "@(Public|NoAuth|AllowAnonymous)" --include="*.{ts,java,cs}"
+grep -rE "password.*==" --include="*.{ts,js,py}"          # Weak comparison
+grep -rE "md5|sha1" --include="*.{ts,js,py}"              # Weak hashing
+grep -rE "cookie.*secure.*false" --include="*.{ts,js}"
+```
+
+**Red flags:**
+- Comparing passwords with `==` instead of timing-safe comparison
+- Using MD5/SHA1 for password hashing
+- Missing `httpOnly` or `secure` on session cookies
+- JWT tokens without expiration
+- No rate limiting on login endpoints
+
+---
+
+### 5. Authorization (IDOR) Detection
+
+**What to look for:**
+- Resource access without ownership check
+- Sequential/predictable IDs in URLs
+- Missing authorization middleware
+
+**Search patterns:**
+```bash
+# Find resource lookups without ownership check
+grep -rE "findById|findUnique|findOne" --include="*.{ts,js}"
+# Then verify these have ownership checks nearby
+```
+
+**Red flags:**
+- `GET /users/:id` returns any user's data
+- `DELETE /documents/:id` without checking document.ownerId
+- APIs that accept user IDs in request body
+- No tenant isolation in multi-tenant apps
+
+**Review checklist:**
+1. Find all routes with ID parameters
+2. Check if ownership is verified after fetching resource
+3. Verify authorization happens before any mutation
+
+---
+
+### 6. Error Handling Issues
+
+**What to look for:**
+- Stack traces in API responses
+- Detailed error messages to users
+- Logging sensitive data
+
+**Search patterns:**
+```bash
+# Find error exposure patterns
+grep -rE "catch.*res\.(json|send).*error" --include="*.{ts,js}"
+grep -rE "catch.*return.*error\.message" --include="*.{ts,js}"
+grep -rE "logger\.(info|log).*password" --include="*.{ts,js}"
+```
+
+**Red flags:**
+- `catch (e) { res.json({ error: e.message, stack: e.stack }) }`
+- Database errors exposed to client
+- Logging request bodies that might contain passwords
+
+---
+
+### 7. Dependency Vulnerabilities
+
+**What to look for:**
+- Outdated packages with known CVEs
+- Unused dependencies that increase attack surface
+- Missing lockfiles
+
+**Commands to run:**
+```bash
+npm audit                    # Node.js
+pip-audit                    # Python  
+safety check                 # Python alternative
+snyk test                    # Multi-language
+```
+
+**Red flags:**
+- No `package-lock.json` or equivalent
+- Dependencies not updated in 6+ months
+- Using deprecated packages
+
+---
+
+## Review Workflow
+
+### Quick Security Scan
+1. Run secret detection patterns
+2. Search for dangerous function usage (innerHTML, dangerouslySetInnerHTML, etc.)
+3. Run `npm audit` or equivalent
+4. Check for missing auth decorators on new endpoints
+
+### Deep Security Review
+1. Map all input points (APIs, forms, file uploads)
+2. Trace each input through the codebase
+3. Verify validation at every boundary
+4. Check authorization on every resource access
+5. Review error handling for information leakage
+6. Verify secrets management approach
+
+---
+
+## Output Format
+
+When reporting security issues:
+
+```markdown
+## Security Issues Found
+
+### CRITICAL: [Issue Type]
+**Location**: `file.ts:42`
+**Issue**: [What's wrong]
+**Impact**: [What could happen]
+**Detection**: [How you found it]
+**Fix**: [How to resolve]
+
+### HIGH: [Issue Type]
+...
+```
+
+---
+
+> **Reference**: For secure coding patterns and examples, see `.apm/instructions/security.instructions.md`

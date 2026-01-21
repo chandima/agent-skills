@@ -1,136 +1,112 @@
 ---
 description: "Systematic code review for bugs, security vulnerabilities, and performance issues"
 mode: code-reviewer
+skills:
+  - review/code
+  - review/security
 ---
 
 # Code Review Workflow
 
-You are conducting a thorough code review. Follow this systematic process to identify issues and provide actionable feedback.
+You are conducting a thorough code review. This prompt orchestrates the review process using loaded skills.
 
 ## Parameters
+
 - `files` (optional): Specific files or directories to review
 - `focus` (optional): Area of focus - security, performance, bugs, style, or all
 - `severity` (optional): Minimum severity to report - critical, high, medium, low
 
-## Review Process
+## Process
 
-### 1. Understand Context
+### 1. Gather Context
+
 First, understand what the code is trying to accomplish:
-- Read any associated PR description or commit messages
-- Identify the primary purpose and business logic
-- Note any related files or dependencies
 
-### 2. Security Review
-Check for security vulnerabilities:
+1. Read any associated PR description or commit messages
+2. Identify the primary purpose and business logic
+3. List related files and dependencies affected
 
-**Authentication & Authorization**
-- [ ] Are all endpoints properly authenticated?
-- [ ] Is authorization checked for each resource access?
-- [ ] Are there any IDOR vulnerabilities?
+### 2. Apply Skills
 
-**Input Validation**
-- [ ] Is all user input validated and sanitized?
-- [ ] Are SQL queries parameterized?
-- [ ] Is output properly escaped to prevent XSS?
+Based on the `focus` parameter, apply the appropriate review methodologies:
 
-**Secrets Management**
-- [ ] Are there any hardcoded secrets, API keys, or passwords?
-- [ ] Are sensitive values properly handled (not logged, not exposed)?
+| Focus | Skills to Apply |
+|-------|-----------------|
+| `security` | `review/security` |
+| `bugs` or `all` | `review/code` |
+| `performance` | `review/code` (performance checklist) |
+| `style` | `review/code` (maintainability checklist) |
 
-**Dependencies**
-- [ ] Are dependencies up to date?
-- [ ] Are there known vulnerabilities in dependencies?
+For each skill:
+- Follow the detection patterns
+- Use the search commands to find issues
+- Apply the checklist systematically
 
-### 3. Bug Detection
-Look for common bugs:
+### 3. Prioritize Findings
 
-**Logic Errors**
-- [ ] Are boundary conditions handled correctly?
-- [ ] Are null/undefined cases handled?
-- [ ] Are error cases handled appropriately?
+Categorize issues by severity:
 
-**Race Conditions**
-- [ ] Are there potential race conditions in async code?
-- [ ] Is shared state properly synchronized?
+| Severity | Criteria |
+|----------|----------|
+| **Critical** | Security vulnerabilities, data corruption, breaking bugs |
+| **High** | User-facing bugs, performance in hot paths, missing error handling |
+| **Medium** | Code duplication, minor performance, testability |
+| **Low** | Style preferences, minor readability |
 
-**Resource Management**
-- [ ] Are resources (connections, files, etc.) properly closed?
-- [ ] Are there potential memory leaks?
+Filter by the `severity` parameter if specified.
 
-### 4. Performance Review
-Identify performance issues:
+### 4. Generate Report
 
-**Algorithmic Complexity**
-- [ ] Are there O(n²) or worse algorithms that could be improved?
-- [ ] Are there unnecessary iterations or redundant operations?
+Format the output as follows:
 
-**Database Queries**
-- [ ] Are there N+1 query problems?
-- [ ] Are queries properly indexed?
-- [ ] Is data fetched efficiently (no over-fetching)?
+---
 
-**Resource Usage**
-- [ ] Are large operations batched appropriately?
-- [ ] Is caching used where beneficial?
-- [ ] Are there unnecessary network calls?
+## CODE REVIEW REPORT
 
-### 5. Code Quality
-Evaluate maintainability:
-
-**Readability**
-- [ ] Are variable and function names descriptive?
-- [ ] Is the code well-organized and easy to follow?
-- [ ] Are complex sections commented appropriately?
-
-**Design Patterns**
-- [ ] Is the code DRY (Don't Repeat Yourself)?
-- [ ] Are responsibilities properly separated?
-- [ ] Is the code testable?
-
-**Type Safety**
-- [ ] Are types properly defined and used?
-- [ ] Are there any `any` types that should be more specific?
-
-## Output Format
-
-### CODE REVIEW REPORT
-
-**Files Reviewed**: [List of files]
-**Review Focus**: [Focus area]
+**Files Reviewed**: [List files]
+**Review Focus**: [Focus area or "comprehensive"]
 **Overall Assessment**: [Pass / Pass with suggestions / Needs changes]
 
 ---
 
-#### Critical Issues (Must Fix)
+### Critical Issues (Must Fix)
+
 | Location | Issue | Recommendation |
 |----------|-------|----------------|
-| `file.ts:42` | SQL injection vulnerability | Use parameterized query |
+| `file.ts:42` | [Description] | [How to fix] |
 
-#### High Priority
+### High Priority
+
 | Location | Issue | Recommendation |
 |----------|-------|----------------|
-| `file.ts:87` | Unhandled null case | Add null check before access |
+| `file.ts:87` | [Description] | [How to fix] |
 
-#### Medium Priority
+### Medium Priority
+
 | Location | Issue | Recommendation |
 |----------|-------|----------------|
-| `file.ts:123` | N+1 query problem | Use eager loading or batch query |
+| `file.ts:123` | [Description] | [How to fix] |
 
-#### Suggestions (Optional Improvements)
-- Consider extracting validation logic to a separate function
-- Variable name `x` could be more descriptive
+### Suggestions (Optional Improvements)
+
+- [Suggestion 1]
+- [Suggestion 2]
 
 ---
 
-#### Summary
-- **Security**: [Issues found / No issues]
-- **Bugs**: [Issues found / No issues]
-- **Performance**: [Issues found / No issues]
+### Summary
+
+- **Security**: [X issues found / No issues]
+- **Bugs**: [X issues found / No issues]
+- **Performance**: [X issues found / No issues]
 - **Code Quality**: [Good / Needs improvement]
 
-#### Recommended Actions
+### Recommended Actions
+
 1. [First priority action]
 2. [Second priority action]
+
+---
 
 ## Example Usage
 
