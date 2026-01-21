@@ -382,9 +382,20 @@ npm install
 npx sst dev
 ```
 
+> **Important**: Your `package.json` scripts must run the framework directly, not SST:
+> ```json
+> {
+>   "scripts": {
+>     "dev": "astro dev",
+>     "build": "astro build"
+>   }
+> }
+> ```
+> SST's multiplexer calls `npm run dev` to start your frontend. If `dev` is set to `sst dev`, you'll get a recursion error.
+
 This starts SST's multiplexer which deploys your infrastructure and runs the Astro dev server locally. You'll see a tabbed interface with:
-- **Deploy** - SST infrastructure deployment
-- **MyWeb** - Your Astro dev server at http://localhost:4321
+- **Deploy** - SST infrastructure deployment  
+- **Web** - Your Astro dev server
 
 ```
 SST 3.x
@@ -392,12 +403,10 @@ SST 3.x
 ➜ App:     todo-app
   Stage:   dev
 
-✓ Built
-✓ Deployed:
-  API:     https://abc123.execute-api.us-east-1.amazonaws.com
+✓ Complete
 ```
 
-Click on **MyWeb** in the sidebar to see the Astro dev server output, then open http://localhost:4321 in your browser.
+Click on the **Web** tab to see the Astro dev server output. Once it shows `Local: http://localhost:4321/`, open that URL in your browser.
 
 ---
 
