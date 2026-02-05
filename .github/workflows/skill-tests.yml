@@ -1,0 +1,15 @@
+name: Skill Smoke Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run skill smoke tests
+        run: bash scripts/run-skill-tests.sh
