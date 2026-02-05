@@ -71,6 +71,10 @@ bash /mnt/skills/user/h5p-type-scaffold/scripts/scaffold.sh \
 - Manual steps: `references/DEV-HARNESS.md`
 - Helper script: `scripts/h5p-dev.sh`
 
+## xAPI Integration
+
+- Guidance: `references/XAPI.md` (emit + listen + platform notes)
+
 See `references/H5P-CLI.md` for a fuller command overview and `references/CONTENT-TYPE-AUTHORING.md` for authoring essentials.
 
 ## Guidance (2024/2025 Best Practices)

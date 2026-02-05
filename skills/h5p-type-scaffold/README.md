@@ -54,4 +54,5 @@ h5p pack <library> [my.h5p]
 - Use `editor` with `--kind editor` to scaffold H5P editor widgets.
 - Other options to consider: `otacke/h5p-editor-boilerplate` (editor widgets) and `tarmoj/h5p-react-boilerplate` (React, but stale).
 - For a local dev harness, see `references/DEV-HARNESS.md` or run `scripts/h5p-dev.sh`.
+- For xAPI integration guidance, see `references/XAPI.md`.
 - See `references/CONCEPTS.md`, `references/CONTENT-TYPE-AUTHORING.md`, and `references/H5P-CLI.md` for deeper guidance.

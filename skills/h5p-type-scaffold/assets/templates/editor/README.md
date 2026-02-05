@@ -35,3 +35,13 @@ h5p pack <library> [<library2>...] [my.h5p]
 - https://h5p.org/technical-overview
 - https://github.com/h5p/h5p-cli
 - https://h5p.org/h5p-cli-guide
+
+## xAPI Integration
+
+H5P content types emit xAPI statements via the built-in event system. Your platform forwards those statements to an LRS.
+
+- Emit statements: `triggerXAPI(...)`, `triggerXAPIScored(...)`
+- Listen for statements: `instance.on('xAPI', ...)`
+
+See `references/XAPI.md` in this repo for full guidance.
+
