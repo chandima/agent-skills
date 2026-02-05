@@ -1,0 +1,300 @@
+#!/usr/bin/env python3
+"""Generate a static skills directory site from skills/*/SKILL.md."""
+from __future__ import annotations
+
+import html
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+from typing import Dict, List
+
+ROOT = Path(__file__).resolve().parents[1]
+SKILLS_DIR = ROOT / "skills"
+OUT_DIR = ROOT / "docs"
+
+
+def parse_frontmatter(text: str) -> Dict[str, str]:
+    if not text.startswith("---"):
+        return {}
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return {}
+    fm = parts[1]
+    data: Dict[str, str] = {}
+    for line in fm.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+        if (value.startswith("\"") and value.endswith("\"")) or (
+            value.startswith("'") and value.endswith("'")
+        ):
+            value = value[1:-1]
+        data[key] = value
+    return data
+
+
+def repo_from_env() -> str:
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    if repo:
+        return repo
+
+    try:
+        url = subprocess.check_output(
+            ["git", "config", "--get", "remote.origin.url"],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    except Exception:
+        return "chandima/agent-skills"
+
+    if url.endswith(".git"):
+        url = url[: -len(".git")]
+
+    if "github.com/" in url:
+        repo = url.split("github.com/")[-1]
+    elif "github.com:" in url:
+        repo = url.split("github.com:")[-1]
+    else:
+        repo = "chandima/agent-skills"
+
+    return repo.strip("/") or "chandima/agent-skills"
+
+
+def load_skills() -> List[Dict[str, str]]:
+    skills: List[Dict[str, str]] = []
+    if not SKILLS_DIR.exists():
+        return skills
+
+    for skill_dir in sorted(SKILLS_DIR.iterdir()):
+        if not skill_dir.is_dir():
+            continue
+        skill_md = skill_dir / "SKILL.md"
+        if not skill_md.exists():
+            continue
+
+        text = skill_md.read_text(encoding="utf-8")
+        fm = parse_frontmatter(text)
+        name = fm.get("name", skill_dir.name)
+        description = fm.get("description", "").strip()
+
+        skills.append(
+            {
+                "dir": skill_dir.name,
+                "name": name,
+                "description": description,
+            }
+        )
+
+    return skills
+
+
+def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
+    repo_url = f"https://github.com/{repo}"
+    skill_count = len(skills)
+
+    skill_names = [skill["name"] for skill in skills] or ["<skill-name>"]
+    example_skill = skill_names[0]
+
+    install_commands = [
+        f"npx skills add {repo} --all",
+        f"npx skills add {repo} --skill {example_skill}",
+        f"npx skills add {repo} --skill '*' -a claude-code -a opencode -a codex",
+        f"npx skills add {repo} --agent '*' --skill {example_skill}",
+        f"npx skills add {repo} --skill {example_skill} -a codex",
+        f"npx skills add {repo} --list",
+    ]
+
+    commands_block = "\n".join(install_commands)
+
+    skill_names = [skill["name"] for skill in skills]
+    skills_list_html = " ".join(
+        f"<span class=\"rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600\">{html.escape(name)}</span>"
+        for name in skill_names
+    )
+
+    cards = []
+    for skill in skills:
+        name = html.escape(skill["name"])
+        description = html.escape(skill["description"]) if skill["description"] else ""
+        path = f"skills/{skill['dir']}"
+        url = f"{repo_url}/tree/main/{path}"
+        card_description = description or "No description provided yet."
+        install_cmd = f"npx skills add {repo} --skill {skill['name']}"
+        cards.append(
+            f"""
+            <div class=\"flex h-full flex-col gap-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm\">
+              <div class=\"flex items-start justify-between gap-3\">
+                <div>
+                  <a class=\"text-base font-semibold text-slate-900\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{name}</a>
+                  <div class=\"mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500\">Skill</div>
+                </div>
+                <button type=\"button\" class=\"inline-flex items-center justify-center rounded-md border border-slate-200 bg-slate-50 p-1.5 text-slate-500 transition-colors duration-200 copy-btn\" data-copy=\"{html.escape(install_cmd)}\">
+                  <span class=\"sr-only copy-label\">Copy install command</span>
+                  <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" class=\"h-4 w-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\">
+                    <rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\" />
+                    <path d=\"M5 15V5a2 2 0 0 1 2-2h10\" />
+                  </svg>
+                </button>
+              </div>
+              <div class=\"text-sm text-slate-600\">{card_description}</div>
+              <div class=\"rounded-md bg-slate-900 px-3 py-2 text-xs text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
+              <a class=\"mt-auto text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{html.escape(path)}</a>
+            </div>
+            """.strip()
+        )
+
+    cards_html = (
+        "\n".join(cards)
+        if cards
+        else "<p class=\"text-sm text-slate-500\">No skills found.</p>"
+    )
+
+    script_block = """<script>
+  (() => {
+    const copyText = async (text) => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const fallback = document.createElement('textarea');
+      fallback.value = text;
+      fallback.setAttribute('readonly', 'readonly');
+      fallback.style.position = 'absolute';
+      fallback.style.left = '-9999px';
+      document.body.appendChild(fallback);
+      fallback.select();
+      document.execCommand('copy');
+      document.body.removeChild(fallback);
+    };
+
+    const markCopied = (button) => {
+      const original = button.dataset.originalLabel || '';
+      const icon = button.querySelector('svg');
+      const labelEl = button.querySelector('.copy-label');
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = labelEl ? labelEl.textContent || '' : '';
+      }
+      button.classList.add('copy-success');
+      if (labelEl) labelEl.textContent = 'Copied';
+      if (icon) icon.classList.add('copy-icon-success');
+      setTimeout(() => {
+        button.classList.remove('copy-success');
+        if (labelEl) labelEl.textContent = original;
+        if (icon) icon.classList.remove('copy-icon-success');
+      }, 1200);
+    };
+
+    document.querySelectorAll('[data-copy]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const text = button.getAttribute('data-copy') || '';
+        try {
+          await copyText(text);
+          markCopied(button);
+        } catch {
+          // Ignore copy failures.
+        }
+      });
+    });
+  })();
+</script>"""
+
+    return f"""<!doctype html>
+<html lang=\"en\">
+  <head>
+    <meta charset=\"utf-8\" />
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+    <title>{html.escape(repo)}</title>
+        <script src=\"https://cdn.tailwindcss.com\"></script>
+    <style>
+      .copy-btn.copy-success {{
+        border-color: #16a34a;
+        color: #16a34a;
+      }}
+      .copy-btn.copy-success .copy-icon-success {{
+        stroke: #16a34a;
+      }}
+    </style>
+
+  </head>
+  <body class=\"bg-slate-50 text-slate-900\">
+    <main class=\"max-w-5xl mx-auto px-6 py-12\">
+      <header class=\"rounded-xl border border-slate-200 bg-white p-8 shadow-sm\">
+        <div class=\"flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between\">
+          <div>
+            <div class=\"inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600\">Agent Skills</div>
+            <h1 class=\"mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl\">{html.escape(repo)}</h1>
+            <p class=\"mt-2 text-sm text-slate-600\">Auto-generated directory from <code class=\"rounded bg-slate-100 px-1.5 py-0.5\">skills/*/SKILL.md</code>.</p>
+            <div class=\"mt-4 text-sm text-slate-600\">{skill_count} skill{'s' if skill_count != 1 else ''} • <a class=\"text-slate-900 underline\" href=\"{html.escape(repo_url)}\" target=\"_blank\" rel=\"noreferrer\">View repo</a></div>
+          </div>
+        </div>
+      </header>
+
+      <section class=\"mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm\">
+        <div class=\"flex flex-wrap items-start justify-between gap-4\">
+          <div>
+            <h2 class=\"text-lg font-semibold text-slate-900\">Install</h2>
+            <p class=\"mt-1 text-sm text-slate-600\">Common install patterns for this repo:</p>
+          </div>
+        </div>
+        <pre class=\"mt-4 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100\"><code>{html.escape(commands_block)}</code></pre>
+        <div class=\"mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-600\">
+          <span class=\"font-semibold text-slate-700\">Available skills:</span>
+          {skills_list_html or '<span class=\"text-slate-500\">None</span>'}
+        </div>
+      </section>
+
+      <section class=\"mt-8\">
+        <div class=\"flex items-center justify-between\">
+          <h2 class=\"text-lg font-semibold text-slate-900\">Available Skills</h2>
+          <span class=\"rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600\">{skill_count}</span>
+        </div>
+        <div class=\"mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3\">
+          {cards_html}
+        </div>
+      </section>
+
+      <footer class=\"mt-10 text-xs text-slate-500\">
+        Generated by <code class=\"rounded bg-slate-100 px-1\">scripts/generate-site.py</code>
+      </footer>
+    </main>
+    {script_block}
+
+  </body>
+</html>
+"""
+
+
+def main() -> None:
+    repo = repo_from_env()
+    skills = load_skills()
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    html_output = build_html(repo, skills)
+    (OUT_DIR / "index.html").write_text(html_output, encoding="utf-8")
+
+    payload = {
+        "repo": repo,
+        "skills": skills,
+    }
+    (OUT_DIR / "skills.json").write_text(
+        json.dumps(payload, indent=2),
+        encoding="utf-8",
+    )
+
+    (OUT_DIR / ".nojekyll").write_text("", encoding="utf-8")
+
+    styles_path = OUT_DIR / "styles.css"
+    if styles_path.exists():
+        styles_path.unlink()
+
+
+if __name__ == "__main__":
+    main()

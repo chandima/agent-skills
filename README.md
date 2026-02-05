@@ -13,12 +13,35 @@ This repository is standalone and does not track an upstream source.
 ## Install with `skills`
 
 ```bash
-npx skills add <owner>/<repo>
+# Install all skills
+npx skills add chandima/agent-skills --all
+
+# Install a specific skill
+npx skills add chandima/agent-skills --skill h5p-type-scaffold
+
+# Install all skills to specific agents
+npx skills add chandima/agent-skills --skill '*' -a claude-code -a opencode -a codex
+
+# Install specific skills to all agents
+npx skills add chandima/agent-skills --agent '*' --skill h5p-type-scaffold
+
+# Install a specific skill to a specific agent
+npx skills add chandima/agent-skills --skill h5p-type-scaffold -a codex
+
+# List available skills in the repo
+npx skills add chandima/agent-skills --list
 ```
 
-## H5P Notes
+### Install Options
 
-This skill defaults to the SNORDIAN boilerplate for linting and i18n scaffolding, supports the official `h5p/h5p-boilerplate` layout, and can scaffold editor widgets (`H5PEditor.*`). It assumes vanilla JS for maximum compatibility, but you can adapt the output for framework-based boilerplates if needed.
+| Option                    | Description                                                         |
+| ------------------------- | ------------------------------------------------------------------- |
+| `-g, --global`            | Install to user directory instead of project                        |
+| `-a, --agent <agents...>` | Target specific agents (e.g., `claude-code`, `codex`)               |
+| `-s, --skill <skills...>` | Install specific skills by name (use `'*'` for all skills)          |
+| `-l, --list`              | List available skills without installing                            |
+| `-y, --yes`               | Skip all confirmation prompts                                       |
+| `--all`                   | Install all skills to all agents without prompts                    |
 
 ## Testing
 
