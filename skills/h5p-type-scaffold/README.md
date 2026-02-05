@@ -7,6 +7,7 @@ This skill scaffolds a modern H5P content type using proven boilerplates and van
 - `library.json` and `semantics.json`
 - `src/entries`, `src/scripts`, `src/styles`
 - `README.md` (templates)
+- `DEV.md` (templates, dev harness)
 - `webpack.config.js`, `.babelrc`
 - build scripts in `package.json`
 
@@ -52,4 +53,5 @@ h5p pack <library> [my.h5p]
 - Use `vanilla` for the simplest official baseline.
 - Use `editor` with `--kind editor` to scaffold H5P editor widgets.
 - Other options to consider: `otacke/h5p-editor-boilerplate` (editor widgets) and `tarmoj/h5p-react-boilerplate` (React, but stale).
+- For a local dev harness, see `references/DEV-HARNESS.md` or run `scripts/h5p-dev.sh`.
 - See `references/CONCEPTS.md`, `references/CONTENT-TYPE-AUTHORING.md`, and `references/H5P-CLI.md` for deeper guidance.

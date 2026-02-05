@@ -1,0 +1,30 @@
+# Interactive Development (h5p-cli)
+
+Use `h5p-cli` as a local editor/server while you build the editor widget.
+
+## Prerequisites
+
+```bash
+npm install -g h5p-cli
+```
+
+## Harness Setup
+
+From this library root:
+
+```bash
+mkdir -p .h5p-dev
+cd .h5p-dev
+h5p core
+mkdir -p libraries
+ln -s .. "libraries/<machine>"
+h5p setup <machine>
+h5p server
+```
+
+Open the local server URL that `h5p server` prints (usually `http://localhost:8080`).
+
+## Notes
+
+- If `h5p setup` fails for a brand new library, retry without it and add dependencies later.
+- Keep your build watcher running: `npm run build -- --watch`.
