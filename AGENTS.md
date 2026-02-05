@@ -36,7 +36,11 @@ allowed-tools: Read, Write, Bash(./scripts/*)
 
 ## Workflow Notes
 
-- Use available skills when relevant to the task. If a skill exists that matches the request, invoke it instead of re-implementing its logic.
+- Skill usage is mandatory when a relevant skill exists. Do not proceed with manual logic if a matching skill is available.
+- Always scan the available skills list and explicitly invoke the applicable skill(s) before doing any work.
+- If multiple skills apply, pick the minimal set that covers the request and use them in a clear order.
+- If you decide not to use an obvious skill, explicitly state why.
+- After invoking a skill, follow its `SKILL.md` workflow (scripts/templates/references) rather than re-implementing.
 - Keep templates aligned with upstream or official references when applicable.
 - Do not add an upstream git remote unless explicitly requested.
 

@@ -21,3 +21,4 @@ Dependency libraries are non-runnable shared code used by content types (often u
 - H5P semantics: https://h5p.org/semantics
 - Creating editor widgets: https://h5p.org/creating-editor-widgets
 - Technical overview: https://h5p.org/technical-overview
+- See also: references/CONTENT-TYPE-AUTHORING.md

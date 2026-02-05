@@ -53,6 +53,7 @@ bash /mnt/skills/user/h5p-type-scaffold/scripts/scaffold.sh \
 
 - `library.json` and `semantics.json`
 - `src/entries`, `src/scripts`, `src/styles`
+- `README.md` (templates)
 - Build config and lint config (varies by template)
 - Templates live under `assets/templates/`
 
@@ -62,9 +63,9 @@ bash /mnt/skills/user/h5p-type-scaffold/scripts/scaffold.sh \
 - Build assets: `npm run build`
 - Set up dev environment: `h5p core` then `h5p setup <library>`
 - Run local editor/server: `h5p server`
-- Pack to `.h5p`: `h5p utils pack <library>` (see `h5p utils help pack`)
+- Pack to `.h5p`: `h5p pack <library> [my.h5p]` (see `h5p help pack`)
 
-See `references/H5P-CLI.md` for a fuller command overview.
+See `references/H5P-CLI.md` for a fuller command overview and `references/CONTENT-TYPE-AUTHORING.md` for authoring essentials.
 
 ## Guidance (2024/2025 Best Practices)
 
