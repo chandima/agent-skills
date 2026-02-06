@@ -2,10 +2,6 @@
 
 This repository hosts a minimal set of skills for AI coding agents.
 
-## Upstream
-
-This repository is standalone and does not track an upstream source.
-
 ## Available Skills
 
 - `h5p-type-scaffold` — scaffold a modern H5P content type (library) from curated boilerplates (default: SNORDIAN).
