@@ -26,7 +26,7 @@ if [[ ! -f "$CONTENT_DIR/library.json" ]]; then
   exit 1
 fi
 
-if ! rg -q '"runnable"\s*:\s*1' "$CONTENT_DIR/library.json"; then
+if ! grep -Eq '"runnable"[[:space:]]*:[[:space:]]*1' "$CONTENT_DIR/library.json"; then
   echo "Content library.json should be runnable" >&2
   exit 1
 fi
@@ -46,7 +46,7 @@ if [[ ! -f "$CONTENT_DIR/DEV.md" ]]; then
   exit 1
 fi
 
-if rg -q '__[A-Z_]+' "$CONTENT_DIR"; then
+if grep -R -E -q '__[A-Z_]+' "$CONTENT_DIR"; then
   echo "Found unresolved template tokens in content output" >&2
   exit 1
 fi
@@ -65,7 +65,7 @@ if [[ ! -f "$VANILLA_DIR/library.json" ]]; then
   exit 1
 fi
 
-if ! rg -q '"runnable"\s*:\s*1' "$VANILLA_DIR/library.json"; then
+if ! grep -Eq '"runnable"[[:space:]]*:[[:space:]]*1' "$VANILLA_DIR/library.json"; then
   echo "Vanilla library.json should be runnable" >&2
   exit 1
 fi
@@ -90,7 +90,7 @@ if [[ ! -f "$VANILLA_DIR/DEV.md" ]]; then
   exit 1
 fi
 
-if rg -q '__[A-Z_]+' "$VANILLA_DIR"; then
+if grep -R -E -q '__[A-Z_]+' "$VANILLA_DIR"; then
   echo "Found unresolved template tokens in vanilla output" >&2
   exit 1
 fi
@@ -109,7 +109,7 @@ if [[ ! -f "$EDITOR_DIR/library.json" ]]; then
   exit 1
 fi
 
-if ! rg -q '"runnable"\s*:\s*0' "$EDITOR_DIR/library.json"; then
+if ! grep -Eq '"runnable"[[:space:]]*:[[:space:]]*0' "$EDITOR_DIR/library.json"; then
   echo "Editor library.json should be non-runnable" >&2
   exit 1
 fi
@@ -129,7 +129,7 @@ if [[ ! -f "$EDITOR_DIR/DEV.md" ]]; then
   exit 1
 fi
 
-if rg -q '__[A-Z_]+' "$EDITOR_DIR"; then
+if grep -R -E -q '__[A-Z_]+' "$EDITOR_DIR"; then
   echo "Found unresolved template tokens in editor output" >&2
   exit 1
 fi
