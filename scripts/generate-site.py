@@ -130,22 +130,22 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
         cards.append(
             f"""
             <div class=\"flex h-full flex-col gap-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm\">
-              <div class=\"flex items-start justify-between gap-3\">
-                <div>
-                  <a class=\"text-base font-semibold text-slate-900\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{name}</a>
-                  <div class=\"mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500\">Skill</div>
-                </div>
-                <button type=\"button\" class=\"inline-flex items-center justify-center rounded-md border border-slate-200 bg-slate-50 p-1.5 text-slate-500 transition-colors duration-200 copy-btn\" data-copy=\"{html.escape(install_cmd)}\">
-                  <span class=\"sr-only copy-label\">Copy install command</span>
-                  <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" class=\"h-4 w-4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\">
-                    <rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\" />
-                    <path d=\"M5 15V5a2 2 0 0 1 2-2h10\" />
-                  </svg>
-                </button>
+              <div>
+                <a class=\"text-base font-semibold text-slate-900\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{name}</a>
+                <div class=\"mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500\">Skill</div>
               </div>
               <div class=\"text-sm text-slate-600\">{card_description}</div>
               <div class=\"mt-auto flex flex-col gap-3\">
-                <div class=\"rounded-md bg-slate-900 px-3 py-2 text-xs text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
+                <div class=\"relative\">
+                  <button type=\"button\" class=\"absolute -right-2 -top-2 inline-flex items-center justify-center rounded-md border border-slate-300 bg-slate-50 p-1 text-slate-500 shadow-sm transition-colors duration-200 copy-btn\" data-copy=\"{html.escape(install_cmd)}\">
+                    <span class=\"sr-only copy-label\">Copy install command</span>
+                    <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" class=\"h-3.5 w-3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\">
+                      <rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\" />
+                      <path d=\"M5 15V5a2 2 0 0 1 2-2h10\" />
+                    </svg>
+                  </button>
+                  <div class=\"rounded-md bg-slate-900 px-3 py-2 pr-8 text-xs text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
+                </div>
                 <a class=\"text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{html.escape(path)}</a>
               </div>
             </div>
@@ -253,9 +253,9 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
       </section>
 
       <section class=\"mt-8\">
-        <div class=\"flex items-center justify-between\">
+        <div class=\"flex items-center\">
           <h2 class=\"text-lg font-semibold text-slate-900\">Available Skills</h2>
-          <span class=\"rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600\">{skill_count}</span>
+          <span class=\"ml-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600\">{skill_count}</span>
         </div>
         <div class=\"mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3\">
           {cards_html}
