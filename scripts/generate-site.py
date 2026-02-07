@@ -144,7 +144,7 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
                       <path d=\"M5 15V5a2 2 0 0 1 2-2h10\" />
                     </svg>
                   </button>
-                  <div class=\"flex h-[3.75rem] items-start rounded-md bg-slate-900 px-3 py-2 pr-8 text-xs leading-5 text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
+                  <div class=\"flex h-[5rem] items-start rounded-md bg-slate-900 px-3 py-2 pr-8 text-xs leading-5 text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
                 </div>
                 <a class=\"text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{html.escape(path)}</a>
               </div>
