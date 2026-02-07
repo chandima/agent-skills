@@ -131,7 +131,12 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
             f"""
             <div class=\"flex h-full flex-col gap-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm\">
               <div>
-                <a class=\"text-base font-semibold text-slate-900\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{name}</a>
+                <a class=\"inline-flex items-center gap-1.5 text-base font-semibold text-slate-900\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">
+                  <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" class=\"h-3.5 w-3.5\" fill=\"currentColor\">
+                    <path d=\"M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.66-.22.66-.49v-1.72c-2.78.62-3.37-1.21-3.37-1.21-.46-1.2-1.12-1.52-1.12-1.52-.92-.64.07-.63.07-.63 1.01.07 1.55 1.08 1.55 1.08.9 1.58 2.35 1.13 2.92.86.09-.67.35-1.13.64-1.39-2.22-.26-4.56-1.14-4.56-5.09 0-1.13.39-2.05 1.03-2.77-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.06A9.3 9.3 0 0 1 12 6.8c.85 0 1.71.12 2.51.35 1.9-1.34 2.74-1.06 2.74-1.06.55 1.42.2 2.47.1 2.73.64.72 1.03 1.64 1.03 2.77 0 3.96-2.35 4.83-4.58 5.08.36.32.68.96.68 1.94v2.87c0 .27.16.6.67.49A10.27 10.27 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z\" />
+                  </svg>
+                  {name}
+                </a>
                 <div class=\"mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500\">Skill</div>
               </div>
               <div class=\"card-description text-sm text-slate-600\">{card_description}</div>
@@ -146,7 +151,12 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
                   </button>
                   <div class=\"flex h-[5rem] items-start rounded-md bg-slate-900 px-3 py-2 pr-8 text-xs leading-5 text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
                 </div>
-                <a class=\"text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{html.escape(path)}</a>
+                <a class=\"inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">
+                  <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" class=\"h-3 w-3\" fill=\"currentColor\">
+                    <path d=\"M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.66-.22.66-.49v-1.72c-2.78.62-3.37-1.21-3.37-1.21-.46-1.2-1.12-1.52-1.12-1.52-.92-.64.07-.63.07-.63 1.01.07 1.55 1.08 1.55 1.08.9 1.58 2.35 1.13 2.92.86.09-.67.35-1.13.64-1.39-2.22-.26-4.56-1.14-4.56-5.09 0-1.13.39-2.05 1.03-2.77-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.06A9.3 9.3 0 0 1 12 6.8c.85 0 1.71.12 2.51.35 1.9-1.34 2.74-1.06 2.74-1.06.55 1.42.2 2.47.1 2.73.64.72 1.03 1.64 1.03 2.77 0 3.96-2.35 4.83-4.58 5.08.36.32.68.96.68 1.94v2.87c0 .27.16.6.67.49A10.27 10.27 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z\" />
+                  </svg>
+                  {html.escape(path)}
+                </a>
               </div>
             </div>
             """.strip()
