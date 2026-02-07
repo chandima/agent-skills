@@ -144,8 +144,10 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
                 </button>
               </div>
               <div class=\"text-sm text-slate-600\">{card_description}</div>
-              <div class=\"rounded-md bg-slate-900 px-3 py-2 text-xs text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
-              <a class=\"mt-auto text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{html.escape(path)}</a>
+              <div class=\"mt-auto flex flex-col gap-3\">
+                <div class=\"rounded-md bg-slate-900 px-3 py-2 text-xs text-slate-100\"><code>{html.escape(install_cmd)}</code></div>
+                <a class=\"text-xs font-semibold text-slate-500\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{html.escape(path)}</a>
+              </div>
             </div>
             """.strip()
         )

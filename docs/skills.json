@@ -5,6 +5,11 @@
       "dir": "h5p-type-scaffold",
       "name": "h5p-type-scaffold",
       "description": "Scaffold and guide creation of H5P content types. Use when asked \"build an H5P type\", \"create an H5P content type\", \"scaffold an H5P library\", or \"start a new H5P\"."
+    },
+    {
+      "dir": "weather",
+      "name": "weather",
+      "description": "Get current weather and forecasts (no API key required)."
     }
   ]
 }
