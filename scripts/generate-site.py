@@ -134,7 +134,7 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
                 <a class=\"text-base font-semibold text-slate-900\" href=\"{html.escape(url)}\" target=\"_blank\" rel=\"noreferrer\">{name}</a>
                 <div class=\"mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500\">Skill</div>
               </div>
-              <div class=\"text-sm text-slate-600\">{card_description}</div>
+              <div class=\"card-description text-sm text-slate-600\">{card_description}</div>
               <div class=\"mt-auto flex flex-col gap-3\">
                 <div class=\"relative\">
                   <button type=\"button\" class=\"absolute -right-2 -top-2 inline-flex items-center justify-center rounded-md border border-slate-300 bg-slate-50 p-1 text-slate-500 shadow-sm transition-colors duration-200 copy-btn\" data-copy=\"{html.escape(install_cmd)}\">
@@ -221,6 +221,12 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
       }}
       .copy-btn.copy-success .copy-icon-success {{
         stroke: #16a34a;
+      }}
+      .card-description {{
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        overflow: hidden;
       }}
     </style>
 
