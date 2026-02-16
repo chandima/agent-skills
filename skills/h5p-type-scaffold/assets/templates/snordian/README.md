@@ -30,6 +30,10 @@ Commands run relative to the working directory. Use `h5p help` to see supported 
 h5p pack <library> [<library2>...] [my.h5p]
 ```
 
+For content-type library install, upload a package containing `library.json`-based libraries.
+If validation errors mention `content/ not allowed` or invalid `h5p.json`, use the library upload flow instead of content import.
+If running from this skill repo, validate package intent first with `scripts/validate-package.sh`.
+
 ## References
 - https://h5p.org/library-development
 - https://h5p.org/semantics
@@ -44,4 +48,3 @@ H5P content types emit xAPI statements via the built-in event system. Your platf
 - Listen for statements: `instance.on('xAPI', ...)`
 
 See `references/XAPI.md` in this repo for full guidance.
-

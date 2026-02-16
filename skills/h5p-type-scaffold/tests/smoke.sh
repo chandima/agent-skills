@@ -4,6 +4,21 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP_BASE="/tmp/h5p-type-scaffold-smoke"
 
+assert_not_content_package_layout() {
+  local dir="$1"
+  local label="$2"
+
+  if [[ -f "$dir/h5p.json" ]]; then
+    echo "$label should not include h5p.json (content package file)" >&2
+    exit 1
+  fi
+
+  if [[ -d "$dir/content" ]]; then
+    echo "$label should not include content/ (content package folder)" >&2
+    exit 1
+  fi
+}
+
 cleanup() {
   rm -rf "$TMP_BASE"
 }
@@ -45,6 +60,8 @@ if [[ ! -f "$CONTENT_DIR/DEV.md" ]]; then
   echo "Missing content DEV.md" >&2
   exit 1
 fi
+
+assert_not_content_package_layout "$CONTENT_DIR" "Content scaffold"
 
 if grep -R -E -q '__[A-Z_]+' "$CONTENT_DIR"; then
   echo "Found unresolved template tokens in content output" >&2
@@ -90,6 +107,8 @@ if [[ ! -f "$VANILLA_DIR/DEV.md" ]]; then
   exit 1
 fi
 
+assert_not_content_package_layout "$VANILLA_DIR" "Vanilla scaffold"
+
 if grep -R -E -q '__[A-Z_]+' "$VANILLA_DIR"; then
   echo "Found unresolved template tokens in vanilla output" >&2
   exit 1
@@ -129,6 +148,8 @@ if [[ ! -f "$EDITOR_DIR/DEV.md" ]]; then
   exit 1
 fi
 
+assert_not_content_package_layout "$EDITOR_DIR" "Editor scaffold"
+
 if grep -R -E -q '__[A-Z_]+' "$EDITOR_DIR"; then
   echo "Found unresolved template tokens in editor output" >&2
   exit 1
@@ -136,6 +157,56 @@ fi
 
 if [[ ! -x "$SCRIPT_DIR/scripts/h5p-dev.sh" ]]; then
   echo "Missing or non-executable h5p-dev.sh helper" >&2
+  exit 1
+fi
+
+if [[ ! -x "$SCRIPT_DIR/scripts/validate-package.sh" ]]; then
+  echo "Missing or non-executable validate-package.sh helper" >&2
+  exit 1
+fi
+
+echo "Testing package validator..."
+bash "$SCRIPT_DIR/scripts/validate-package.sh" \
+  --mode library-install \
+  --dir "$CONTENT_DIR" >/dev/null
+
+CONTENT_PKG_DIR="$TMP_BASE/content-import-example"
+mkdir -p "$CONTENT_PKG_DIR/content"
+
+cat > "$CONTENT_PKG_DIR/h5p.json" <<'JSON'
+{
+  "title": "Smoke Content Import",
+  "language": "en",
+  "mainLibrary": "H5P.SmokeContent",
+  "license": "U",
+  "embedTypes": ["iframe"],
+  "preloadedDependencies": [
+    { "machineName": "H5P.SmokeContent", "majorVersion": 1, "minorVersion": 0 }
+  ]
+}
+JSON
+
+cat > "$CONTENT_PKG_DIR/content/content.json" <<'JSON'
+{
+  "text": "hello"
+}
+JSON
+
+bash "$SCRIPT_DIR/scripts/validate-package.sh" \
+  --mode content-import \
+  --dir "$CONTENT_PKG_DIR" >/dev/null
+
+if bash "$SCRIPT_DIR/scripts/validate-package.sh" \
+  --mode library-install \
+  --dir "$CONTENT_PKG_DIR" >/dev/null 2>&1; then
+  echo "library-install validator should fail for content package layout" >&2
+  exit 1
+fi
+
+if bash "$SCRIPT_DIR/scripts/validate-package.sh" \
+  --mode content-import \
+  --dir "$CONTENT_DIR" >/dev/null 2>&1; then
+  echo "content-import validator should fail for library package layout" >&2
   exit 1
 fi
 

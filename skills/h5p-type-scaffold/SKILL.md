@@ -10,10 +10,11 @@ Create a modern H5P content type starting from established boilerplates, with a 
 
 ## How It Works
 
-1. Collect metadata (title, machine name, version, author, license).
-2. Generate a boilerplate (default: SNORDIAN) that aligns with current H5P best practices.
-3. Provide starter `library.json`, `semantics.json`, and JS/CSS entrypoints.
-4. Outline build and packaging steps using `h5p-cli`.
+1. Choose package intent: `library-install` (default) or `content-import` (advanced).
+2. Collect metadata (title, machine name, version, author, license).
+3. Generate a boilerplate (default: SNORDIAN) that aligns with current H5P best practices.
+4. Provide starter `library.json`, `semantics.json`, and JS/CSS entrypoints.
+5. Outline build and packaging steps using `h5p-cli`.
 
 ## Concepts
 
@@ -23,6 +24,18 @@ Create a modern H5P content type starting from established boilerplates, with a 
 - Non-runnable dependency libraries (often `H5P.*` or `H5PApi.*`) are used as shared building blocks.
 
 See `references/CONCEPTS.md` for details and official links.
+
+## Packaging Intent (Required)
+
+- `library-install` (default): Upload libraries/content types to platform library installers.
+- `content-import` (advanced): Import an authored content instance (`h5p.json` + `content/content.json`) into content import flows.
+- This skill scaffolds libraries. It does not generate `content/content.json`.
+- Validate unpacked packages before upload:
+
+```bash
+bash /mnt/skills/user/h5p-type-scaffold/scripts/validate-package.sh --mode library-install --dir /path/to/unpacked
+bash /mnt/skills/user/h5p-type-scaffold/scripts/validate-package.sh --mode content-import --dir /path/to/unpacked
+```
 
 ## Usage
 
@@ -64,7 +77,11 @@ bash /mnt/skills/user/h5p-type-scaffold/scripts/scaffold.sh \
 - Build assets: `npm run build`
 - Set up dev environment: `h5p core` then `h5p setup <library>`
 - Run local editor/server: `h5p server`
-- Pack to `.h5p`: `h5p pack <library> [my.h5p]` (see `h5p help pack`)
+- Pack library for install: `h5p pack <library> [my-library.h5p]` (see `h5p help pack`)
+- Install this package in the platform's library/content-type upload flow.
+- For library packages, keep `library.json` at the package root and avoid top-level `h5p.json` or `content/`.
+- Use `h5p.json` + `content/` only for content-instance export/import flows.
+- Run package validation before upload with `scripts/validate-package.sh`.
 
 ## Dev Harness (h5p-cli)
 
@@ -110,3 +127,4 @@ See `references/H5P-CLI.md` for a fuller command overview and `references/CONTEN
 - For editor widgets, use `--kind editor` and a `H5PEditor.YourWidget` machine name.
 - If versioning is unclear, start with `1.0.0` and update later.
 - If build fails, ensure `node` and `npm` are installed and run `npm install`.
+- If import errors mention `content/ not allowed`, missing `preloadDependencies` in `h5p.json`, or invalid `license` in `h5p.json`, you are importing a content package into a library upload flow.

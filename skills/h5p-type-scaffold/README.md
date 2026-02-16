@@ -2,6 +2,12 @@
 
 This skill scaffolds a modern H5P content type using proven boilerplates and vanilla JavaScript. It generates the minimal files needed to build, test, and package a new library.
 
+## Packaging intent
+
+- `library-install` (default): upload a library/content-type package to a platform installer.
+- `content-import` (advanced): import a content instance package (`h5p.json` + `content/content.json`).
+- The scaffold produced by this skill is for `library-install`.
+
 ## What it generates
 
 - `library.json` and `semantics.json`
@@ -44,7 +50,17 @@ npm run build
 h5p core
 h5p setup <library>
 h5p server
-h5p pack <library> [my.h5p]
+h5p pack <library> [my-library.h5p]
+```
+
+Use this package in the platform's library/content-type upload flow.  
+For library packages, keep `library.json` and avoid top-level `h5p.json` or `content/`.
+
+Validate an unpacked package before upload:
+
+```bash
+bash /mnt/skills/user/h5p-type-scaffold/scripts/validate-package.sh --mode library-install --dir /path/to/unpacked
+bash /mnt/skills/user/h5p-type-scaffold/scripts/validate-package.sh --mode content-import --dir /path/to/unpacked
 ```
 
 ## Notes
@@ -54,5 +70,7 @@ h5p pack <library> [my.h5p]
 - Use `editor` with `--kind editor` to scaffold H5P editor widgets.
 - Other options to consider: `otacke/h5p-editor-boilerplate` (editor widgets) and `tarmoj/h5p-react-boilerplate` (React, but stale).
 - For a local dev harness, see `references/DEV-HARNESS.md` or run `scripts/h5p-dev.sh`.
+- Validate package layout before upload with `scripts/validate-package.sh`.
 - For xAPI integration guidance, see `references/XAPI.md`.
 - See `references/CONCEPTS.md`, `references/CONTENT-TYPE-AUTHORING.md`, and `references/H5P-CLI.md` for deeper guidance.
+- If import errors mention `content/ not allowed`, missing `preloadDependencies` in `h5p.json`, or invalid `license` in `h5p.json`, you're importing a content package through a library upload path.

@@ -30,6 +30,10 @@ The widget is available in the H5P editor when installed and referenced by a con
 h5p pack <library> [<library2>...] [my.h5p]
 ```
 
+For editor-library install, upload a package containing `library.json`-based libraries.
+If validation errors mention `content/ not allowed` or invalid `h5p.json`, use the library upload flow instead of content import.
+If running from this skill repo, validate package intent first with `scripts/validate-package.sh`.
+
 ## References
 - https://h5p.org/creating-editor-widgets
 - https://h5p.org/technical-overview
@@ -44,4 +48,3 @@ H5P content types emit xAPI statements via the built-in event system. Your platf
 - Listen for statements: `instance.on('xAPI', ...)`
 
 See `references/XAPI.md` in this repo for full guidance.
-
