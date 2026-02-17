@@ -34,6 +34,17 @@ For editor-library install, upload a package containing `library.json`-based lib
 If validation errors mention `content/ not allowed` or invalid `h5p.json`, use the library upload flow instead of content import.
 If running from this skill repo, validate package intent first with `scripts/validate-package.sh`.
 
+### Drupal 11.x / strict validators
+
+If upload fails with "File 'dist/' not allowed" or similar, the `.h5p` zip
+contains directory entries. Use `scripts/pack.sh` to create a clean archive:
+
+```bash
+bash scripts/pack.sh --dir . --out __EDITOR_MACHINE__.h5p
+```
+
+Add `--strict` to abort if any file lacks an allowed H5P extension.
+
 ## References
 - https://h5p.org/creating-editor-widgets
 - https://h5p.org/technical-overview

@@ -83,6 +83,21 @@ bash /mnt/skills/user/h5p-type-scaffold/scripts/scaffold.sh \
 - Use `h5p.json` + `content/` only for content-instance export/import flows.
 - Run package validation before upload with `scripts/validate-package.sh`.
 
+### Strict-validator packaging (Drupal 11.x H5P 2.0.0+)
+
+Some platforms (notably Drupal 11.x with the H5P 2.0.0 beta module) reject
+zip directory entries such as `dist/` or `language/` because they lack an
+allowed file extension. Use `scripts/pack.sh` instead of `h5p pack` to produce
+a `.h5p` archive that omits directory entries:
+
+```bash
+bash /mnt/skills/user/h5p-type-scaffold/scripts/pack.sh \
+  --dir /path/to/built-library \
+  --out MyLibrary.h5p
+```
+
+Add `--strict` to abort if any packaged file lacks an allowed extension.
+
 ## Dev Harness (h5p-cli)
 
 - Manual steps: `references/DEV-HARNESS.md`
@@ -128,3 +143,4 @@ See `references/H5P-CLI.md` for a fuller command overview and `references/CONTEN
 - If versioning is unclear, start with `1.0.0` and update later.
 - If build fails, ensure `node` and `npm` are installed and run `npm install`.
 - If import errors mention `content/ not allowed`, missing `preloadDependencies` in `h5p.json`, or invalid `license` in `h5p.json`, you are importing a content package into a library upload flow.
+- If Drupal 11.x (H5P 2.0.0 beta) rejects the upload with **"File 'dist/' not allowed"** or **"File 'language/' not allowed"**, the `.h5p` zip contains directory entries. Repack using `scripts/pack.sh --dir <library-dir>` which creates a zip without directory entries.

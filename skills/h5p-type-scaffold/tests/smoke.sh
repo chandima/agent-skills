@@ -165,6 +165,77 @@ if [[ ! -x "$SCRIPT_DIR/scripts/validate-package.sh" ]]; then
   exit 1
 fi
 
+if [[ ! -x "$SCRIPT_DIR/scripts/pack.sh" ]]; then
+  echo "Missing or non-executable pack.sh helper" >&2
+  exit 1
+fi
+
+echo "Testing pack.sh (no directory entries)..."
+# Create a minimal built library to pack
+PACK_DIR="$TMP_BASE/pack-test-lib"
+mkdir -p "$PACK_DIR/dist" "$PACK_DIR/language"
+cat > "$PACK_DIR/library.json" <<'JSON'
+{
+  "title": "Pack Test",
+  "machineName": "H5P.PackTest",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 1,
+  "preloadedJs": [{ "path": "dist/h5p-pack-test.js" }],
+  "preloadedCss": [{ "path": "dist/h5p-pack-test.css" }]
+}
+JSON
+cat > "$PACK_DIR/semantics.json" <<'JSON'
+[{ "name": "text", "type": "text", "label": "Text" }]
+JSON
+echo "console.log('test');" > "$PACK_DIR/dist/h5p-pack-test.js"
+echo ".test{}" > "$PACK_DIR/dist/h5p-pack-test.css"
+echo '{"semantics":[]}' > "$PACK_DIR/language/en.json"
+cat > "$PACK_DIR/.h5pignore" <<'TXT'
+node_modules
+src
+.git
+.babelrc
+.h5pignore
+webpack.config.js
+package.json
+package-lock.json
+README.md
+TXT
+
+PACK_OUT="$TMP_BASE/H5P.PackTest.h5p"
+bash "$SCRIPT_DIR/scripts/pack.sh" --dir "$PACK_DIR" --out "$PACK_OUT" --strict >/dev/null
+
+if [[ ! -f "$PACK_OUT" ]]; then
+  echo "pack.sh did not create output file" >&2
+  exit 1
+fi
+
+# Verify no directory entries in the zip
+DIR_ENTRIES=$(zipinfo -1 "$PACK_OUT" | grep '/$' || true)
+if [[ -n "$DIR_ENTRIES" ]]; then
+  echo "pack.sh output contains directory entries:" >&2
+  echo "$DIR_ENTRIES" >&2
+  exit 1
+fi
+
+# Verify expected files are present
+for expected in library.json semantics.json dist/h5p-pack-test.js dist/h5p-pack-test.css language/en.json; do
+  if ! zipinfo -1 "$PACK_OUT" | grep -qx "$expected"; then
+    echo "pack.sh output missing expected file: $expected" >&2
+    exit 1
+  fi
+done
+
+# Verify dotfiles are excluded
+DOTFILES=$(zipinfo -1 "$PACK_OUT" | grep '/\.\|^\.' || true)
+if [[ -n "$DOTFILES" ]]; then
+  echo "pack.sh output contains dotfiles:" >&2
+  echo "$DOTFILES" >&2
+  exit 1
+fi
+
 echo "Testing package validator..."
 bash "$SCRIPT_DIR/scripts/validate-package.sh" \
   --mode library-install \
