@@ -1,7 +1,10 @@
 ---
 name: h5p-type-scaffold
 description: Scaffold and guide creation of H5P content types. Use when asked "build an H5P type", "create an H5P content type", "scaffold an H5P library", or "start a new H5P".
-allowed-tools: Read, Write, Bash(./scripts/*)
+allowed-tools:
+  - Read
+  - Write
+  - Bash(./scripts/*)
 ---
 
 # H5P Content Type Scaffolder

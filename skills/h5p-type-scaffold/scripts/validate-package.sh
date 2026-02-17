@@ -71,7 +71,7 @@ check_file_extensions() {
     if ! echo "$fpath" | grep -Eiq "$ALLOWED_EXT_RE"; then
       bad_files+=("$fpath")
     fi
-  done < <(cd "$dir" && find . -type f "${find_excludes[@]}" | sed 's|^\./||' | sort)
+  done < <(cd "$dir" && find . -type f ${find_excludes[@]+"${find_excludes[@]}"} | sed 's|^\./||' | sort)
 
   if [[ ${#bad_files[@]} -gt 0 ]]; then
     echo "Warning: Files without an allowed H5P extension detected:" >&2

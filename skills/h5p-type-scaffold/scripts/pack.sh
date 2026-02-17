@@ -62,13 +62,14 @@ if [[ ! -f "$LIB_DIR/library.json" ]]; then
   exit 1
 fi
 
-# Determine output path from machineName if not provided
-if [[ -z "$OUT_PATH" ]]; then
-  MACHINE=$(python3 -c "
+# Determine machineName for the wrapper directory and output path
+MACHINE=$(python3 -c "
 import json, sys
 with open('$LIB_DIR/library.json') as f:
     print(json.load(f).get('machineName', 'library'))
 ")
+
+if [[ -z "$OUT_PATH" ]]; then
   OUT_PATH="${MACHINE}.h5p"
 fi
 
@@ -90,7 +91,7 @@ trap 'rm -f "$TMP_FILELIST"' EXIT
 
 (
   cd "$LIB_DIR"
-  find . -type f "${FIND_EXCLUDES[@]}" | sed 's|^\./||' | sort > "$TMP_FILELIST"
+  find . -type f ${FIND_EXCLUDES[@]+"${FIND_EXCLUDES[@]}"} | sed 's|^\./||' | sort > "$TMP_FILELIST"
 )
 
 # Remove hidden files (dotfiles) that shouldn't be in the package
@@ -121,16 +122,38 @@ if [[ ${#BAD_FILES[@]} -gt 0 ]]; then
   echo "These may be rejected by strict validators (e.g. Drupal 11.x H5P 2.0.0)." >&2
 fi
 
-# Create zip without directory entries (-D flag)
+# Create zip without directory entries (-D flag).
+# H5P library-install packages must wrap files inside a directory named after
+# the machineName (e.g. H5P.MathTrivia/library.json) so the H5P validator
+# treats the directory as a library rather than treating subdirectories like
+# dist/ and language/ as separate (invalid) libraries.
 OUT_ABS="$(cd "$(dirname "$OUT_PATH")" 2>/dev/null && pwd)/$(basename "$OUT_PATH")"
+
+TMP_STAGE="$(mktemp -d)"
+trap 'rm -f "$TMP_FILELIST"; rm -rf "$TMP_STAGE"' EXIT
+
+# Copy files into a wrapper directory named after the machineName
+WRAPPER="$TMP_STAGE/$MACHINE"
+mkdir -p "$WRAPPER"
+while IFS= read -r fpath; do
+  target_dir="$WRAPPER/$(dirname "$fpath")"
+  mkdir -p "$target_dir"
+  cp "$LIB_DIR/$fpath" "$target_dir/"
+done < "$TMP_FILELIST"
+
+# Build prefixed file list for zip
+TMP_PREFIXED="$(mktemp)"
+sed "s|^|${MACHINE}/|" "$TMP_FILELIST" > "$TMP_PREFIXED"
+
 (
-  cd "$LIB_DIR"
+  cd "$TMP_STAGE"
   # Remove existing output if present
   rm -f "$OUT_ABS"
   # -D: do not create directory entries
   # -X: do not store extra file attributes
-  cat "$TMP_FILELIST" | zip -D -X -@ "$OUT_ABS" > /dev/null
+  cat "$TMP_PREFIXED" | zip -D -X -@ "$OUT_ABS" > /dev/null
 )
+rm -f "$TMP_PREFIXED"
 
 echo "Packed $FILE_COUNT file(s) into $OUT_PATH"
 echo "No directory entries included (safe for Drupal 11.x H5P 2.0.0+)."
