@@ -119,6 +119,10 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
         for name in skill_names
     )
 
+    plural_s = "s" if skill_count != 1 else ""
+    none_span = '<span class="text-slate-500">None</span>'
+    skills_badge_html = skills_list_html or none_span
+
     cards = []
     for skill in skills:
         name = html.escape(skill["name"])
@@ -249,7 +253,7 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
             <div class=\"inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600\">Agent Skills</div>
             <h1 class=\"mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl\">{html.escape(repo)}</h1>
             <p class=\"mt-2 text-sm text-slate-600\">Auto-generated directory from <code class=\"rounded bg-slate-100 px-1.5 py-0.5\">skills/*/SKILL.md</code>.</p>
-            <div class=\"mt-4 text-sm text-slate-600\">{skill_count} skill{'s' if skill_count != 1 else ''} • <a class=\"text-slate-900 underline\" href=\"{html.escape(repo_url)}\" target=\"_blank\" rel=\"noreferrer\">View repo</a></div>
+            <div class=\"mt-4 text-sm text-slate-600\">{skill_count} skill{plural_s} • <a class=\"text-slate-900 underline\" href=\"{html.escape(repo_url)}\" target=\"_blank\" rel=\"noreferrer\">View repo</a></div>
           </div>
         </div>
       </header>
@@ -264,7 +268,7 @@ def build_html(repo: str, skills: List[Dict[str, str]]) -> str:
         <pre class=\"mt-4 overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm text-slate-100\"><code>{html.escape(commands_block)}</code></pre>
         <div class=\"mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-600\">
           <span class=\"font-semibold text-slate-700\">Available skills:</span>
-          {skills_list_html or '<span class=\"text-slate-500\">None</span>'}
+          {skills_badge_html}
         </div>
       </section>
 
